@@ -18,7 +18,7 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <tf2_ros/transform_broadcaster.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "ranger_base/ranger_params.hpp"
 
@@ -101,6 +101,7 @@ class RangerMessenger {
 
     status_msg.header.stamp = current_time_;
     status_msg.linear_velocity = state.motion_state.linear_velocity;
+    status_msg.angular_velocity = state.motion_state.angular_velocity;
     // double phi =ConvertInnerAngleToCentral(state.motion_state.angular_velocity);
     // status_msg.steering_angle = phi;
     status_msg.steering_angle = state.motion_state.steering_angle;
@@ -109,7 +110,7 @@ class RangerMessenger {
     status_msg.control_mode = state.system_state.control_mode;
     status_msg.error_code = state.system_state.error_code;
     status_msg.battery_voltage = state.system_state.battery_voltage;
-    status_msg.motion_mode_state = state.motion_mode_state.motion_mode;
+    status_msg.motion_mode_state = state.current_motion_mode.motion_mode;
     motion_mode_ = status_msg.motion_mode_state;
 
     auto actuator = ranger_->GetActuatorState();
@@ -143,6 +144,8 @@ class RangerMessenger {
     double x_v = 0.0, y_v = 0.0, radius = 0.0;
     double phi_i = state.motion_state.steering_angle / 180.0 * M_PI;
     // std::cout <<  motion_mode_ << std::endl;
+    
+       
     switch (motion_mode_) 
     {
       case ranger_msgs::msg::RangerSetting::MOTION_MODE_ACKERMAN: {
