@@ -53,7 +53,7 @@ void RangerBaseRos::LoadParameters() {
 bool RangerBaseRos::Initialize() {
 
   std::cout << "Robot base: Ranger" << std::endl;
-  ProtocolDectctor detector;
+  ProtocolDetector detector;
   // if(port_name.find("can") != std::string::npos)
   if (detector.Connect(port_name_)) {
       std::cout << "Detected protocol: AGX_V2" << std::endl;
