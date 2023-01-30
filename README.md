@@ -8,7 +8,7 @@
 
 ## Communication interface setup
 
-Please refer to the [README](https://github.com/agilexrobotics/ugv_sdk#hardware-interface) of "ugv_sdk" package for setup of communication interfaces.
+Please refer to the [README](https://github.com/westonrobot/ugv_sdk) of "ugv_sdk" package for setup of communication interfaces.
 
 #### Note on CAN interface on Nvidia Jetson Platforms
 
@@ -23,7 +23,7 @@ Nvidia Jeston TX2/Xavier/XavierNX have CAN controller(s) integrated in the main 
 
     ```
     $ cd ~/ros2_ws/src
-    $ git clone https://github.com/agilexrobotics/ugv_sdk.git
+    $ git clone https://github.com/westonrobot/ugv_sdk.git
     $ git clone https://github.com/agilexrobotics/ranger_ros2.git
     $ cd ..
     $ colcon build
