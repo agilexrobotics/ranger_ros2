@@ -326,7 +326,7 @@ class RangerMessenger {
     }
     case ranger_msgs::msg::RangerSetting::MOTION_MODE_ROUND:
     case ranger_msgs::msg::RangerSetting::MOTION_MODE_SLOPING: {
-      ranger_->SetMotionCommand(0.0, 0.0, -(msg->linear.x), 0.0);
+      ranger_->SetMotionCommand(0.0, 0.0, -(msg->linear.x));
       break;
     }
   }

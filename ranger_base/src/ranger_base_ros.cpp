@@ -13,18 +13,17 @@
 namespace westonrobot {
 RangerBaseRos::RangerBaseRos(std::string node_name)
     : rclcpp::Node(node_name), keep_running_(false) {
-  this->declare_parameter("port_name");   //声明参数
+  this->declare_parameter("port_name", rclcpp::ParameterValue("can0"));   //声明参数
 
-  this->declare_parameter("odom_frame");
-  this->declare_parameter("base_frame");
-  this->declare_parameter("odom_topic_name");
+  this->declare_parameter("odom_frame", rclcpp::ParameterValue("odom"));
+  this->declare_parameter("base_frame", rclcpp::ParameterValue("base_link"));
+  this->declare_parameter("odom_topic_name", rclcpp::ParameterValue("odom"));
 
-  this->declare_parameter("is_ranger_mini");
-  this->declare_parameter("is_omni_wheel");
+  this->declare_parameter("is_ranger_mini", rclcpp::ParameterValue(false));
+  this->declare_parameter("is_omni_wheel", rclcpp::ParameterValue(false));
 
-  this->declare_parameter("simulated_robot");
-  this->declare_parameter("control_rate");
-
+  this->declare_parameter("simulated_robot", rclcpp::ParameterValue(false));
+  this->declare_parameter("control_rate", rclcpp::ParameterValue(50));
   LoadParameters();
 }
 
@@ -57,7 +56,7 @@ bool RangerBaseRos::Initialize() {
   // if(port_name.find("can") != std::string::npos)
   if (detector.Connect(port_name_)) {
       std::cout << "Detected protocol: AGX_V2" << std::endl;
-      robot_ = std::unique_ptr<RangerBase>();
+      robot_ = std::make_shared<RangerRobot>(false);
       std::cout << "Creating interface for Ranger with AGX_V2 Protocol"
                   << std::endl;
 
@@ -82,11 +81,11 @@ void RangerBaseRos::Stop() { keep_running_ = false; }
 
 void RangerBaseRos::Run() {
 
-  robot_ = std::make_shared<RangerBase>();
+  robot_ = std::make_shared<RangerRobot>(false);
   // instantiate a ROS messenger
-    std::unique_ptr<RangerMessenger<RangerBase>> messenger =
-        std::unique_ptr<RangerMessenger<RangerBase>>(
-            new RangerMessenger<RangerBase>(robot_, this));
+    std::unique_ptr<RangerMessenger<RangerRobot>> messenger =
+        std::unique_ptr<RangerMessenger<RangerRobot>>(
+            new RangerMessenger<RangerRobot>(robot_, this));
     messenger->SetOdometryFrame(odom_frame_);
     messenger->SetBaseFrame(base_frame_);
     messenger->SetOdometryTopicName(odom_topic_name_);
