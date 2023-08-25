@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<launch>
+    <arg name="port_name" default="can0"/>
+    <arg name="robot_model" default="ranger"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link" />
+    <arg name="update_rate" default="50" />
+    <arg name="odom_topic_name" default="odom" />
+    <arg name="publish_odom_tf" default="false" />
+
+    <node name="ranger_base_node" pkg="ranger_base" exec="ranger_base_node" output="both">
+        <param name="port_name"  value="$(var port_name)" />
+        <param name="robot_model"  value="$(var robot_model)" />
+        <param name="odom_frame"  value="$(var odom_frame)" />
+        <param name="base_frame"  value="$(var base_frame)" />
+        <param name="update_rate"  value="$(var update_rate)" />
+        <param name="odom_topic_name"  value="$(var odom_topic_name)" />  
+        <param name="publish_odom_tf"  value="$(var publish_odom_tf)" />
+    </node>
+</launch>

@@ -1,42 +1,45 @@
-/*
- * ranger_base_node.cpp
- *
- * Created on: Oct 15, 2021 16:20
- * Description:
- *
- * Copyright (c) 2021 Weston Robot Pte. Ltd.
- */
+/**
+* @file ranger_base_node.cpp
+* @date 2021-04-20
+* @brief
+*
+# @copyright Copyright (c) 2021 AgileX Robotics
+* @copyright Copyright (c) 2023 Weston Robot Pte. Ltd.
+*/
 
-#include <memory>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp/executor.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
-#include <tf2_ros/transform_broadcaster.h>
-#include "ranger_base/ranger_base_ros.hpp"
+#include "ranger_base/ranger_messenger.hpp"
 
 using namespace westonrobot;
 
-std::shared_ptr<RangerBaseRos> robot;
-
-void DetachRobot(int signal) {
-  (void)signal;
-  robot->Stop();
+void SignalHandler(int s)
+{
+  printf("Caught signal %d, program exit\n", s);
+  exit(EXIT_FAILURE);
 }
 
-int main(int argc, char **argv) {
+void controlSingal()
+{
+  struct sigaction sigIntHandler;
+  sigIntHandler.sa_handler = SignalHandler;
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+  sigaction(SIGINT, &sigIntHandler, NULL);
+}
+
+int main(int argc, char** argv)
+{
   // setup ROS node
   rclcpp::init(argc, argv);
-  //   std::signal(SIGINT, DetachRobot);
+  controlSingal();
 
-  robot = std::make_shared<RangerBaseRos>("ranger");
-  while (true) {
-    // robot->Initialize();
-
-    std::cout << "Robot initialized, start running ..." << std::endl;
-    robot->Run();
-  }
+  auto node = rclcpp::Node::make_shared("ranger_base_node");
+  // instantiate a robot object
+  RangerROSMessenger messenger(node);
+  messenger.Run();
 
   return 0;
 }

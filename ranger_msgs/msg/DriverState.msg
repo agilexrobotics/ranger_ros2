@@ -1,0 +1,4 @@
+float32 driver_voltage
+float32 driver_temperature
+float32 motor_temperature
+uint32 driver_state

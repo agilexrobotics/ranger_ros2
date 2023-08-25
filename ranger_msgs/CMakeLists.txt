@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(ranger_msgs)
 
-# Default to C++14
+
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -17,16 +17,16 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
 set(msg_file
-"msg/RangerActuatorState.msg"
-"msg/RangerRCState.msg"
-"msg/RangerSetting.msg"
-"msg/RangerStatus.msg"
+"msg/ActuatorState.msg"
+"msg/ActuatorStateArray.msg"
+"msg/DriverState.msg"
+"msg/MotionState.msg"
+"msg/MotorState.msg"
+"msg/SystemState.msg"
 )
 
-
-
 rosidl_generate_interfaces(${PROJECT_NAME}
-    ${msg_file} # ${srv_file}
+    ${msg_file}
   DEPENDENCIES 
     builtin_interfaces std_msgs)
 
