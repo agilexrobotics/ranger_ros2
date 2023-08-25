@@ -15,7 +15,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -24,17 +23,15 @@ find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-
+find_package(controller_manager REQUIRED)
+# find_package(topic_tools REQUIRED)
 find_package(ranger_msgs REQUIRED)
 find_package(ugv_sdk REQUIRED)
-# add_subdirectory(ascent)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+
 include_directories(
   include
+  ${EIGEN3_INCLUDE_DIR}
 )
-
 
 set(DEPENDENCIES
   "geometry_msgs"
@@ -48,10 +45,10 @@ set(DEPENDENCIES
 )
 
 add_executable(ranger_base_node 
-    src/ranger_base_ros.cpp
-    src/ranger_base_node.cpp)
+    src/ranger_base_node.cpp
+    src/ranger_messenger.cpp)
+
 target_link_libraries(ranger_base_node ugv_sdk ${dependencies})
-# target_link_libraries(ranger_base_node ugv_sdk ${dependencies} ascent)
 ament_target_dependencies(ranger_base_node rclcpp tf2 tf2_ros std_msgs nav_msgs sensor_msgs ranger_msgs ${dependencies})
 
 install(TARGETS ranger_base_node
@@ -75,3 +72,15 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
+
+# include_directories(
+#   include
+#   ${catkin_INCLUDE_DIRS}
+#   ${EIGEN3_INCLUDE_DIR}
+# )
+
+# add_library(ascent INTERFACE)
+# target_include_directories(ascent INTERFACE
+# 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+# 	$<INSTALL_INTERFACE:include>)
+
