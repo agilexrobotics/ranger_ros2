@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<launch>
+
+    <arg name="port_name" default="can0"/>
+    <arg name="robot_model" default="ranger_mini_v2"/>
+    <arg name="odom_frame" default="odom"/>
+    <arg name="base_frame" default="base_link" />
+    <arg name="update_rate" default="50" />
+    <arg name="odom_topic_name" default="odom" />
+    <arg name="publish_odom_tf" default="false" />
+
+    <include file="$(find-pkg-share ranger_base)/launch/include/ranger_robot_base.launch.xml">
+        <arg name="port_name" value="$(var port_name)"/>
+        <arg name="robot_model" value="$(var robot_model)"/>
+        <arg name="odom_frame" value="$(var odom_frame)"/>
+        <arg name="base_frame" value="$(var base_frame)" />
+        <arg name="update_rate" value="$(var update_rate)" />
+        <arg name="odom_topic_name" value="$(var odom_topic_name)" />
+        <arg name="publish_odom_tf" value="$(var publish_odom_tf)" />
+    </include>
+</launch>
