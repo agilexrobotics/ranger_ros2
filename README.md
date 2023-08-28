@@ -1,6 +1,6 @@
-# ROS Packages for Ranger Robot
+# ROS2 Packages for Ranger Robot
 
-This repository contains ROS support packages for the Ranger robot bases to provide a ROS interface to the robot.
+This repository contains ROS2 support packages for the Ranger robot bases to provide a ROS interface to the robot.
 
 ## Supported hardware
 
@@ -21,14 +21,14 @@ This repository contains ROS support packages for the Ranger robot bases to prov
 $ sudo apt install libasio-dev libboost-all-dev
 ```
 
-2. Clone and build the packages in a catkin workspace
+2. Clone and build the packages in a workspace
 
 ```
-$ cd ~/catkin_ws/src
+$ cd ~/agilex_ws/src
 $ git clone https://github.com/westonrobot/ugv_sdk.git
-$ git clone https://github.com/agilexrobotics/ranger_ros.git
+$ git clone https://github.com/agilexrobotics/ranger_ros2.git
 $ cd ..
-$ catkin_make
+$ colcon build
 ```
 3. Setup CAN-To-USB adapter
 
@@ -37,14 +37,14 @@ $ catkin_make
     $ sudo modprobe gs_usb
     ```
     
-* first time use scout-ros package
+* first time use ranger-ros package
    ```
-   $ rosrun scout_bringup setup_can2usb.bash
+   $ sudo bash /src/ranger_ros2/ranger_bringup/scripts/setup_can2usb.bash
    ```
    
-* if not the first time use scout-ros package(Run this command every time you turn off the power) 
+* if not the first time use ranger-ros package(Run this command every time you turn off the power) 
    ```
-   $ rosrun scout_bringup bringup_can2usb.bash
+   $ sudo bash /src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash
    ```
    
 * Testing command
@@ -53,24 +53,24 @@ $ catkin_make
     $ candump can0
     ```
 
-4. Launch ROS nodes
+4. Launch ROS2 nodes
 
 * Start the base node for ranger
 
     ```shell
-    $ roslaunch ranger_base ranger.launch #for ranger
+    $ ros2 launch ranger_bringup ranger.launch #for ranger
     ```
 
 * Start the base node for ranger_mini_v1
 
     ```shell
-    $ roslaunch ranger_base ranger_mini_v1.launch #for ranger_mini 1.0
+    $ ros2 launch ranger_bringup ranger_mini_v1.launch #for ranger_mini 1.0
     ```
 
 * Start the base node for ranger_mini_v2
 
     ```bash
-    $ roslaunch ranger_base ranger_mini_v2.launch #for ranger_mini 2.0
+    $ ros2 launch ranger_bringup ranger_mini_v2.launch #for ranger_mini 2.0
     ```
 
 
