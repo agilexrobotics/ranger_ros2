@@ -41,6 +41,7 @@
 #include "ranger_msgs/msg/actuator_state.hpp"
 #include "ranger_msgs/msg/driver_state.hpp"
 #include "ranger_msgs/msg/motor_state.hpp"
+#include "ranger_msgs/srv/trigger_park_mode.hpp"
 
 #include "ranger_base/ranger_params.hpp"
 
@@ -57,6 +58,7 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
     double max_steer_angle_parallel;
     double max_round_angle;
     double min_turn_radius;
+    bool parking_mode;
   };
 
   enum class RangerSubType { kRanger = 0, kRangerMiniV1, kRangerMiniV2 };
@@ -78,6 +80,7 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
 
   double ConvertInnerAngleToCentral(double angle);
   double ConvertCentralAngleToInner(double angle);
+  bool TriggerParkingService(const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Request> req, const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Response> res);
 
   std::shared_ptr<rclcpp::Node> node_;
   std::shared_ptr<RangerRobot> robot_;
@@ -105,6 +108,8 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
   rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr battery_state_pub_;
 
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr motion_cmd_sub_;
+
+  rclcpp::Service<ranger_msgs::srv::TriggerParkMode>::SharedPtr trigger_parking_server;
 
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
