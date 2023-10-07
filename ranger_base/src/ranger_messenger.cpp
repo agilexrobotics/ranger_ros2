@@ -241,14 +241,14 @@ void RangerROSMessenger::PublishStateToROS() {
 
   // publish BMS state
   {
-    auto common_sensor_state = robot_->GetCommonSensorState();
+    // auto common_sensor_state = robot_->GetCommonSensorState();
 
     sensor_msgs::msg::BatteryState batt_msg;
     batt_msg.header.stamp = current_time_;
-    batt_msg.voltage = common_sensor_state.bms_basic_state.voltage;
-    batt_msg.temperature = common_sensor_state.bms_basic_state.temperature;
-    batt_msg.current = common_sensor_state.bms_basic_state.current;
-    batt_msg.percentage = common_sensor_state.bms_basic_state.battery_soc;
+    batt_msg.voltage = state.bms_basic_state.voltage;
+    batt_msg.temperature = state.bms_basic_state.temperature;
+    batt_msg.current = state.bms_basic_state.current;
+    batt_msg.percentage = state.bms_basic_state.battery_soc;
     batt_msg.charge = std::numeric_limits<float>::quiet_NaN();
     batt_msg.capacity = std::numeric_limits<float>::quiet_NaN();
     batt_msg.design_capacity = std::numeric_limits<float>::quiet_NaN();
