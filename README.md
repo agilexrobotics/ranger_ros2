@@ -15,22 +15,23 @@ This repository contains ROS2 support packages for the Ranger robot bases to pro
 
 ## Build the package
 
-1. Install dependencies
+* Install dependencies
 
 ```bash
 $ sudo apt install libasio-dev libboost-all-dev
 ```
 
-2. Clone and build the packages in a workspace
+* Clone and build the packages in a colcon workspace
 
 ```
-$ cd ~/agilex_ws/src
-$ git clone https://github.com/agilexrobotics/ugv_sdk.git
-$ git clone https://github.com/agilexrobotics/ranger_ros2.git
+$ cd ~/ros2_ws/src
+$ git clone https://github.com/westonrobot/ugv_sdk.git
+$ git clone https://github.com/westonrobot/ranger_ros2.git
 $ cd ..
-$ colcon build
+$ colcon build --symlink-install
 ```
-3. Setup CAN-To-USB adapter
+
+## Setup CAN-To-USB adapter
 
 * Enable gs_usb kernel module(If you have already added this module, you do not need to add it)
     ```
@@ -52,8 +53,8 @@ $ colcon build
     # receiving data from can0
     $ candump can0
     ```
-
-4. Launch ROS2 nodes
+    
+## Launch ROS2 nodes
 
 * Start the base node for ranger
 
@@ -99,3 +100,5 @@ $ colcon build
 * /cmd_vel (geometry_msgs::Twist)
 
 ### Services
+
+* /ranger_msgs/srv/TriggerParkMode (ranger_msgs::srv:TriggerParkMode)
