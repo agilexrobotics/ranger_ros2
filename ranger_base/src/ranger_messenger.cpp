@@ -268,7 +268,7 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
     boost::numeric::odeint::integrate_const(
         boost::numeric::odeint::runge_kutta4<DualAckermanModel::state_type>(),
         DualAckermanModel(robot_params_.wheelbase, u), x, 0.0, dt, (dt / 10.0));
-
+    //std::cout<<" steer: "<<angle<<" central: "<<u.phi<<std::endl;
     position_x_ = x[0];
     position_y_ = x[1];
     theta_ = x[2];
@@ -318,8 +318,8 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
   odom_msg.pose.pose.orientation = odom_quat;
 
   if (motion_mode_ == MotionState::MOTION_MODE_DUAL_ACKERMAN) {
-    odom_msg.twist.twist.linear.x = linear * std::cos(theta_);
-    odom_msg.twist.twist.linear.y = linear * std::sin(theta_);
+    odom_msg.twist.twist.linear.x = linear;
+    odom_msg.twist.twist.linear.y = 0.0;
     odom_msg.twist.twist.angular.z =
         2 * linear * std::sin(ConvertInnerAngleToCentral(angle)) /
         robot_params_.wheelbase;
@@ -330,8 +330,8 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
     if (motion_mode_ == MotionState::MOTION_MODE_SIDE_SLIP) {
       phi = M_PI / 2.0;
     }
-    odom_msg.twist.twist.linear.x = linear * std::cos(phi + theta_);
-    odom_msg.twist.twist.linear.y = linear * std::sin(phi + theta_);
+    odom_msg.twist.twist.linear.x = linear * std::cos(phi);
+    odom_msg.twist.twist.linear.y = linear * std::sin(phi);
 
     odom_msg.twist.twist.angular.z = 0;
   } else if (motion_mode_ == MotionState::MOTION_MODE_SPINNING) {
@@ -448,13 +448,14 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
 
   // Circular motion
   radius = linear / angular;
-  int k = (msg.angular.z * msg.linear.x) >= 0 ? 1.0 : -1.0;
+  int k = (msg.angular.z) >= 0 ? 1.0 : -1.0;
 
   double l, w, phi_i, x;
   l = robot_params_.wheelbase;
   w = robot_params_.track;
   x = sqrt(radius * radius + (l / 2) * (l / 2));
-  phi_i = atan((l / 2) / (x - w / 2));
+  //phi_i = atan((l / 2) / (x - w / 2));
+  phi_i = atan((l / 2) / radius);
   return k * phi_i;
 }
 
