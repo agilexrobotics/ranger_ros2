@@ -1,0 +1,4 @@
+bool trigger_parked_mode
+---
+bool response
+bool is_parked
