@@ -496,4 +496,20 @@ double RangerROSMessenger::ConvertCentralAngleToInner(double angle) {
   phi_i *= angle >= 0 ? 1.0 : -1.0;
   return phi_i;
 }
+
+bool RangerROSMessenger::TriggerParkingService(const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Request> req,
+                                               const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Response> res) {
+  // Call to trigger park mode                                             
+  if (req->trigger_parked_mode) {
+    res->response = true;
+    res->is_parked = true;
+    robot_->SetMotionMode(MotionState::MOTION_MODE_PARKING);
+  } else { // Call to release park mode
+    res->response = true;
+    res->is_parked = false;
+    robot_->SetMotionMode(MotionState::MOTION_MODE_DUAL_ACKERMAN);
+  }
+  robot_params_.parking_mode = res->is_parked;
+  return res->response;
+}
 }  // namespace westonrobot
