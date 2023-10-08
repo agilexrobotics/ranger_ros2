@@ -56,14 +56,14 @@ void RangerROSMessenger::Run() {
 }
 
 void RangerROSMessenger::LoadParameters() {
-  // load parameter from launch files
-  node_->get_parameter_or<std::string>("port_name", port_name_, "can0");
-  node_->get_parameter_or<std::string>("robot_model", robot_model_, "ranger");
-  node_->get_parameter_or<std::string>("odom_frame", odom_frame_, "odom");
-  node_->get_parameter_or<std::string>("base_frame", base_frame_, "base_link");
-  node_->get_parameter_or<int>("update_rate", update_rate_, 50);
-  node_->get_parameter_or<std::string>("odom_topic_name", odom_topic_name_,"odom");
-  node_->get_parameter_or<bool>("publish_odom_tf", publish_odom_tf_, false);
+  //load parameter from launch files
+  port_name_ = node_->declare_parameter<std::string>("port_name","can0");
+  robot_model_ = node_->declare_parameter<std::string>("robot_model","ranger");
+  odom_frame_ =  node_->declare_parameter<std::string>("odom_frame","odom");
+  base_frame_ = node_->declare_parameter<std::string>("base_frame", "base_link");
+  update_rate_ = node_->declare_parameter<int>("update_rate", 50);
+  odom_topic_name_ = node_->declare_parameter<std::string>("odom_topic_name", "odom");
+  publish_odom_tf_ = node_->declare_parameter<bool>("publish_odom_tf",false);
 
   RCLCPP_INFO(node_->get_logger(),
       "Successfully loaded the following parameters: \n port_name: %s\n "
