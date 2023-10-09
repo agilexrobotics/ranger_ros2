@@ -27,6 +27,7 @@ find_package(controller_manager REQUIRED)
 # find_package(topic_tools REQUIRED)
 find_package(ranger_msgs REQUIRED)
 find_package(ugv_sdk REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(
   include
@@ -42,6 +43,7 @@ set(DEPENDENCIES
   "tf2_ros"
   "ranger_msgs"
   "sensor_msgs"
+  "tf2_geometry_msgs"
 )
 
 add_executable(ranger_base_node 
