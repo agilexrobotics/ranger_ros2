@@ -448,7 +448,7 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
 
   // Circular motion
   radius = linear / angular;
-  int k = (msg.angular.z) >= 0 ? 1.0 : -1.0;
+  int k = (msg.angular.z * msg.linear.x) >= 0 ? 1.0 : -1.0;
 
   double l, w, phi_i, x;
   l = robot_params_.wheelbase;
