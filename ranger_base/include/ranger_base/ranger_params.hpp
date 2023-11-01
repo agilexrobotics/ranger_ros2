@@ -48,8 +48,8 @@ struct RangerMiniV2Params {
   static constexpr double wheelbase =
       0.494;  // in meter (front & rear wheel distance) //ranger-mini 0.494
 
-  static constexpr double max_linear_speed = 5.4;      // in m/s
-  static constexpr double max_angular_speed = 0.7853;  // in rad/s
+  static constexpr double max_linear_speed = 1.5;      // in m/s
+  static constexpr double max_angular_speed = 4.8;  // in rad/s
   static constexpr double max_speed_cmd = 10.0;        // in rad/s
 
   static constexpr double max_steer_angle_central = 0.4782;  //~= 27.40 degree
