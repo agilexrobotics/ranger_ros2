@@ -24,7 +24,6 @@ struct RangerParams {
   static constexpr double max_steer_angle_parallel = 1.570;  // 40 degree
   static constexpr double max_round_angle = 1.0057;       // 40 degreeF
   static constexpr double min_turn_radius = 0.810330349;
-  static constexpr bool parking_mode = false;
 };
 
 struct RangerMiniV1Params {
@@ -41,7 +40,6 @@ struct RangerMiniV1Params {
   static constexpr double max_steer_angle_parallel = 0.6981;    // 40 degree
   static constexpr double max_round_angle = 0.935671;
   static constexpr double min_turn_radius = 0.536;
-  static constexpr bool parking_mode = false;
 };
 
 struct RangerMiniV2Params {
@@ -58,7 +56,6 @@ struct RangerMiniV2Params {
   static constexpr double max_steer_angle_parallel = 1.570;     // 180 degree
   static constexpr double max_round_angle = 0.935671;
   static constexpr double min_turn_radius = 0.4764;
-  static constexpr bool parking_mode = false;
 };
 }  // namespace westonrobot
 
