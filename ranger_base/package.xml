@@ -17,6 +17,7 @@
   <depend>std_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>ugv_sdk</depend>
   <depend>ranger_msgs</depend>
   <depend>boost</depend>
