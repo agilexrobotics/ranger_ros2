@@ -46,12 +46,12 @@ set(DEPENDENCIES
   "tf2_geometry_msgs"
 )
 
-add_executable(ranger_base_node 
+add_executable(ranger_base_node
     src/ranger_base_node.cpp
     src/ranger_messenger.cpp)
 
-target_link_libraries(ranger_base_node ugv_sdk ${dependencies})
-ament_target_dependencies(ranger_base_node rclcpp tf2 tf2_ros std_msgs nav_msgs sensor_msgs ranger_msgs ${dependencies})
+target_link_libraries(ranger_base_node ugv_sdk)
+ament_target_dependencies(ranger_base_node ${DEPENDENCIES})
 
 install(TARGETS ranger_base_node
   DESTINATION lib/${PROJECT_NAME})
@@ -85,4 +85,3 @@ ament_package()
 # target_include_directories(ascent INTERFACE
 # 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 # 	$<INSTALL_INTERFACE:include>)
-
