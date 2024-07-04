@@ -15,9 +15,9 @@ using namespace rclcpp;
 using namespace ranger_msgs::msg;
 
 namespace westonrobot {
-namespace {
-double DegreeToRadian(double x) { return x * M_PI / 180.0; }
-}  // namespace
+// namespace {
+// double DegreeToRadian(double x) { return x * M_PI / 180.0; }
+// }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////////
 RangerROSMessenger::RangerROSMessenger(rclcpp::Node::SharedPtr& node){
