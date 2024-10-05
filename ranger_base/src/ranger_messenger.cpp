@@ -141,7 +141,7 @@ void RangerROSMessenger::SetupSubscription() {
 
   // service server
   trigger_parking_server = node_->create_service<ranger_msgs::srv::TriggerParkMode>
-      ("parking_service", std::bind(&RangerROSMessenger::TriggerParkingService, this, std::placeholders::_1, std::placeholders::_2));
+      ("ranger_base_node/parking_service", std::bind(&RangerROSMessenger::TriggerParkingService, this, std::placeholders::_1, std::placeholders::_2));
 
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
 }
