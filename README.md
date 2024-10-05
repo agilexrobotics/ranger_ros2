@@ -101,4 +101,4 @@ $ colcon build --symlink-install
 
 ### Services
 
-* /ranger_msgs/srv/TriggerParkMode (ranger_msgs::srv:TriggerParkMode)
+* /ranger_base_node/parking_service (ranger_msgs::srv:TriggerParkMode)
