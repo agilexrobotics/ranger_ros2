@@ -73,6 +73,11 @@ $ colcon build --symlink-install
     ```bash
     $ ros2 launch ranger_bringup ranger_mini_v2.launch #for ranger_mini 2.0
     ```
+* Start the base node for ranger_mini_v3
+
+    ```bash
+    $ ros2 launch ranger_bringup ranger_mini_v3.launch #for ranger_mini 3.0
+    ```
 
 
 ## ROS interface
@@ -80,7 +85,7 @@ $ colcon build --symlink-install
 ### Parameters
 
 * can_device (string): **can0**
-* robot_model (string): **ranger**/ranger_mini_v1/ranger_mini_v2
+* robot_model (string): **ranger**/ranger_mini_v1/ranger_mini_v2/ranger_mini_v3
 * update_rate (int): **50**
 * base_frame (string): **base_link**
 * odom_frame (string): **odom**
