@@ -20,26 +20,30 @@ namespace westonrobot {
 // }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////////
-RangerROSMessenger::RangerROSMessenger(rclcpp::Node::SharedPtr& node){
-
+RangerROSMessenger::RangerROSMessenger(rclcpp::Node::SharedPtr& node) {
   node_ = node;
   LoadParameters();
 
   // connect to robot and setup ROS subscription
   if (robot_type_ == RangerSubType::kRangerMiniV1) {
-    robot_ = std::make_shared<RangerRobot>(true);
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV1);
+  } else if (robot_type_ == RangerSubType::kRangerMiniV2) {
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV2);
+  } else if (robot_type_ == RangerSubType::kRangerMiniV3) {
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV3);
   } else {
-    robot_ = std::make_shared<RangerRobot>(false);
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRanger);
   }
 
   if (port_name_.find("can") != std::string::npos) {
     if (!robot_->Connect(port_name_)) {
-      RCLCPP_ERROR(node_->get_logger(),"Failed to connect to the CAN port");
+      RCLCPP_ERROR(node_->get_logger(), "Failed to connect to the CAN port");
       return;
     }
     robot_->EnableCommandedMode();
   } else {
-    RCLCPP_ERROR(node_->get_logger(),"Invalid port name: %s", port_name_.c_str());
+    RCLCPP_ERROR(node_->get_logger(), "Invalid port name: %s",
+                 port_name_.c_str());
     return;
   }
 
@@ -56,16 +60,19 @@ void RangerROSMessenger::Run() {
 }
 
 void RangerROSMessenger::LoadParameters() {
-  //load parameter from launch files
-  port_name_ = node_->declare_parameter<std::string>("port_name","can0");
-  robot_model_ = node_->declare_parameter<std::string>("robot_model","ranger");
-  odom_frame_ =  node_->declare_parameter<std::string>("odom_frame","odom");
-  base_frame_ = node_->declare_parameter<std::string>("base_frame", "base_link");
+  // load parameter from launch files
+  port_name_ = node_->declare_parameter<std::string>("port_name", "can0");
+  robot_model_ = node_->declare_parameter<std::string>("robot_model", "ranger");
+  odom_frame_ = node_->declare_parameter<std::string>("odom_frame", "odom");
+  base_frame_ =
+      node_->declare_parameter<std::string>("base_frame", "base_link");
   update_rate_ = node_->declare_parameter<int>("update_rate", 50);
-  odom_topic_name_ = node_->declare_parameter<std::string>("odom_topic_name", "odom");
-  publish_odom_tf_ = node_->declare_parameter<bool>("publish_odom_tf",false);
+  odom_topic_name_ =
+      node_->declare_parameter<std::string>("odom_topic_name", "odom");
+  publish_odom_tf_ = node_->declare_parameter<bool>("publish_odom_tf", false);
 
-  RCLCPP_INFO(node_->get_logger(),
+  RCLCPP_INFO(
+      node_->get_logger(),
       "Successfully loaded the following parameters: \n port_name: %s\n "
       "robot_model: %s\n odom_frame: %s\n base_frame: %s\n "
       "update_rate: %d\n odom_topic_name: %s\n "
@@ -89,59 +96,78 @@ void RangerROSMessenger::LoadParameters() {
         RangerMiniV1Params::max_steer_angle_parallel;
     robot_params_.max_round_angle = RangerMiniV1Params::max_round_angle;
     robot_params_.min_turn_radius = RangerMiniV1Params::min_turn_radius;
+  } else if (robot_model_ == "ranger_mini_v2") {
+    robot_type_ = RangerSubType::kRangerMiniV2;
+
+    robot_params_.track = RangerMiniV2Params::track;
+    robot_params_.wheelbase = RangerMiniV2Params::wheelbase;
+    robot_params_.max_linear_speed = RangerMiniV2Params::max_linear_speed;
+    robot_params_.max_angular_speed = RangerMiniV2Params::max_angular_speed;
+    robot_params_.max_speed_cmd = RangerMiniV2Params::max_speed_cmd;
+    robot_params_.max_steer_angle_central =
+        RangerMiniV2Params::max_steer_angle_central;
+    robot_params_.max_steer_angle_parallel =
+        RangerMiniV2Params::max_steer_angle_parallel;
+    robot_params_.max_round_angle = RangerMiniV2Params::max_round_angle;
+    robot_params_.min_turn_radius = RangerMiniV2Params::min_turn_radius;
+  } else if (robot_model_ == "ranger_mini_v3") {
+    robot_type_ = RangerSubType::kRangerMiniV3;
+
+    robot_params_.track = RangerMiniV2Params::track;
+    robot_params_.wheelbase = RangerMiniV2Params::wheelbase;
+    robot_params_.max_linear_speed = RangerMiniV2Params::max_linear_speed;
+    robot_params_.max_angular_speed = RangerMiniV2Params::max_angular_speed;
+    robot_params_.max_speed_cmd = RangerMiniV2Params::max_speed_cmd;
+    robot_params_.max_steer_angle_central =
+        RangerMiniV2Params::max_steer_angle_central;
+    robot_params_.max_steer_angle_parallel =
+        RangerMiniV2Params::max_steer_angle_parallel;
+    robot_params_.max_round_angle = RangerMiniV2Params::max_round_angle;
+    robot_params_.min_turn_radius = RangerMiniV2Params::min_turn_radius;
   } else {
-    if (robot_model_ == "ranger_mini_v2") {
-      robot_type_ = RangerSubType::kRangerMiniV2;
+    robot_type_ = RangerSubType::kRanger;
 
-      robot_params_.track = RangerMiniV2Params::track;
-      robot_params_.wheelbase = RangerMiniV2Params::wheelbase;
-      robot_params_.max_linear_speed = RangerMiniV2Params::max_linear_speed;
-      robot_params_.max_angular_speed = RangerMiniV2Params::max_angular_speed;
-      robot_params_.max_speed_cmd = RangerMiniV2Params::max_speed_cmd;
-      robot_params_.max_steer_angle_central =
-          RangerMiniV2Params::max_steer_angle_central;
-      robot_params_.max_steer_angle_parallel =
-          RangerMiniV2Params::max_steer_angle_parallel;
-      robot_params_.max_round_angle = RangerMiniV2Params::max_round_angle;
-      robot_params_.min_turn_radius = RangerMiniV2Params::min_turn_radius;
-    } else {
-      robot_type_ = RangerSubType::kRanger;
-
-      robot_params_.track = RangerParams::track;
-      robot_params_.wheelbase = RangerParams::wheelbase;
-      robot_params_.max_linear_speed = RangerParams::max_linear_speed;
-      robot_params_.max_angular_speed = RangerParams::max_angular_speed;
-      robot_params_.max_speed_cmd = RangerParams::max_speed_cmd;
-      robot_params_.max_steer_angle_central =
-          RangerParams::max_steer_angle_central;
-      robot_params_.max_steer_angle_parallel =
-          RangerParams::max_steer_angle_parallel;
-      robot_params_.max_round_angle = RangerParams::max_round_angle;
-      robot_params_.min_turn_radius = RangerParams::min_turn_radius;
-    }
+    robot_params_.track = RangerParams::track;
+    robot_params_.wheelbase = RangerParams::wheelbase;
+    robot_params_.max_linear_speed = RangerParams::max_linear_speed;
+    robot_params_.max_angular_speed = RangerParams::max_angular_speed;
+    robot_params_.max_speed_cmd = RangerParams::max_speed_cmd;
+    robot_params_.max_steer_angle_central =
+        RangerParams::max_steer_angle_central;
+    robot_params_.max_steer_angle_parallel =
+        RangerParams::max_steer_angle_parallel;
+    robot_params_.max_round_angle = RangerParams::max_round_angle;
+    robot_params_.min_turn_radius = RangerParams::min_turn_radius;
   }
   parking_mode_ = false;
 }
 
 void RangerROSMessenger::SetupSubscription() {
   // publisher
-  system_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::SystemState>("/system_state", 10);
-  motion_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::MotionState>("/motion_state", 10);
+  system_state_pub_ = node_->create_publisher<ranger_msgs::msg::SystemState>(
+      "/system_state", 10);
+  motion_state_pub_ = node_->create_publisher<ranger_msgs::msg::MotionState>(
+      "/motion_state", 10);
   actuator_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::ActuatorStateArray>("/actuator_state", 10);
-  odom_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic_name_, 10);
-  battery_state_pub_ =
-      node_->create_publisher<sensor_msgs::msg::BatteryState>("/battery_state", 10);
+      node_->create_publisher<ranger_msgs::msg::ActuatorStateArray>(
+          "/actuator_state", 10);
+  odom_pub_ =
+      node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic_name_, 10);
+  battery_state_pub_ = node_->create_publisher<sensor_msgs::msg::BatteryState>(
+      "/battery_state", 10);
 
   // subscriber
   motion_cmd_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
-      "/cmd_vel", 5, std::bind(&RangerROSMessenger::TwistCmdCallback, this, std::placeholders::_1));
+      "/cmd_vel", 5,
+      std::bind(&RangerROSMessenger::TwistCmdCallback, this,
+                std::placeholders::_1));
 
   // service server
-  trigger_parking_server = node_->create_service<ranger_msgs::srv::TriggerParkMode>
-      ("ranger_base_node/parking_service", std::bind(&RangerROSMessenger::TriggerParkingService, this, std::placeholders::_1, std::placeholders::_2));
+  trigger_parking_server =
+      node_->create_service<ranger_msgs::srv::TriggerParkMode>(
+          "ranger_base_node/parking_service",
+          std::bind(&RangerROSMessenger::TriggerParkingService, this,
+                    std::placeholders::_1, std::placeholders::_2));
 
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
 }
@@ -194,12 +220,14 @@ void RangerROSMessenger::PublishStateToROS() {
 
   // publish actuator state
   {
-    // RCLCPP_DEBUG(node_->get_logger(),"feedback", "Angle_5:%f Angle_6:%f Angle_7:%f Angle_8:%f",
+    // RCLCPP_DEBUG(node_->get_logger(),"feedback", "Angle_5:%f Angle_6:%f
+    // Angle_7:%f Angle_8:%f",
     //                 actuator_state.motor_angles.angle_5,
     //                 actuator_state.motor_angles.angle_6,
     //                 actuator_state.motor_angles.angle_7,
     //                 actuator_state.motor_angles.angle_8);
-    // RCLCPP_DEBUG(node_->get_logger(),"feedback", "speed_1:%f speed_2:%f speed_3:%f speed_4:%f",
+    // RCLCPP_DEBUG(node_->get_logger(),"feedback", "speed_1:%f speed_2:%f
+    // speed_3:%f speed_4:%f",
     //                 actuator_state.motor_speeds.speed_1,
     //                 actuator_state.motor_speeds.speed_2,
     //                 actuator_state.motor_speeds.speed_3,
@@ -274,7 +302,7 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
     boost::numeric::odeint::integrate_const(
         boost::numeric::odeint::runge_kutta4<DualAckermanModel::state_type>(),
         DualAckermanModel(robot_params_.wheelbase, u), x, 0.0, dt, (dt / 10.0));
-    //std::cout<<" steer: "<<angle<<" central: "<<u.phi<<std::endl;
+    // std::cout<<" steer: "<<angle<<" central: "<<u.phi<<std::endl;
     position_x_ = x[0];
     position_y_ = x[1];
     theta_ = x[2];
@@ -364,7 +392,8 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
   }
 }
 
-void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr msg) {
+void RangerROSMessenger::TwistCmdCallback(
+    geometry_msgs::msg::Twist::SharedPtr msg) {
   double steer_cmd;
   double radius;
 
@@ -372,8 +401,7 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
   // check for parking mode, only applicable to RangerMiniV2
   if (parking_mode_ && robot_type_ == RangerSubType::kRangerMiniV2) {
     return;
-  }
-  else if (msg->linear.y != 0) {
+  } else if (msg->linear.y != 0) {
     if (msg->linear.x == 0.0 && robot_type_ == RangerSubType::kRangerMiniV1) {
       motion_mode_ = MotionState::MOTION_MODE_SIDE_SLIP;
       robot_->SetMotionMode(MotionState::MOTION_MODE_SIDE_SLIP);
@@ -455,10 +483,11 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
   }
 }
 
-geometry_msgs::msg::Quaternion RangerROSMessenger::createQuaternionMsgFromYaw(double yaw) {
-    tf2::Quaternion q;
-    q.setRPY(0, 0, yaw);
-    return tf2::toMsg(q);
+geometry_msgs::msg::Quaternion RangerROSMessenger::createQuaternionMsgFromYaw(
+    double yaw) {
+  tf2::Quaternion q;
+  q.setRPY(0, 0, yaw);
+  return tf2::toMsg(q);
 }
 
 double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
@@ -474,7 +503,7 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
   l = robot_params_.wheelbase;
   w = robot_params_.track;
   x = sqrt(radius * radius + (l / 2) * (l / 2));
-  //phi_i = atan((l / 2) / (x - w / 2));
+  // phi_i = atan((l / 2) / (x - w / 2));
   phi_i = atan((l / 2) / radius);
   return k * phi_i;
 }
@@ -502,14 +531,15 @@ double RangerROSMessenger::ConvertCentralAngleToInner(double angle) {
   return phi_i;
 }
 
-bool RangerROSMessenger::TriggerParkingService(const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Request> req,
-                                               const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Response> res) {
-  // Call to trigger park mode                                             
+bool RangerROSMessenger::TriggerParkingService(
+    const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Request> req,
+    const std::shared_ptr<ranger_msgs::srv::TriggerParkMode::Response> res) {
+  // Call to trigger park mode
   if (req->trigger_parked_mode) {
     res->response = true;
     res->is_parked = true;
     robot_->SetMotionMode(MotionState::MOTION_MODE_PARKING);
-  } else { // Call to release park mode
+  } else {  // Call to release park mode
     res->response = true;
     res->is_parked = false;
     robot_->SetMotionMode(MotionState::MOTION_MODE_DUAL_ACKERMAN);

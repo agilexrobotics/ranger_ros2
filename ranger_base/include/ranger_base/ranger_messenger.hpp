@@ -60,7 +60,7 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
     double min_turn_radius;
   };
 
-  enum class RangerSubType { kRanger = 0, kRangerMiniV1, kRangerMiniV2 };
+  enum class RangerSubType { kRanger = 0, kRangerMiniV1, kRangerMiniV2, kRangerMiniV3 };
 
  public:
   RangerROSMessenger(rclcpp::Node::SharedPtr& node);
