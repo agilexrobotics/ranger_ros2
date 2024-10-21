@@ -72,7 +72,12 @@ $ colcon build
     ```bash
     $ ros2 launch ranger_bringup ranger_mini_v2.launch #for ranger_mini 2.0
     ```
+    
+* Start the keyboard tele-op node
 
+    ```bash
+    $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+    ```
 
 ## ROS interface
 
