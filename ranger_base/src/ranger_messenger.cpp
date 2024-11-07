@@ -399,6 +399,16 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
     }
     case MotionState::MOTION_MODE_PARALLEL: {
       steer_cmd = atan(msg->linear.y / msg->linear.x);
+
+      if(std::signbit(msg->linear.x)&&msg->linear.x == 0.0)
+      {
+        steer_cmd = -steer_cmd;
+      }
+      else
+      {
+        steer_cmd = steer_cmd;
+      }
+
       if (steer_cmd > robot_params_.max_steer_angle_parallel) {
         steer_cmd = robot_params_.max_steer_angle_parallel;
       }
