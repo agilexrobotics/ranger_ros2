@@ -125,18 +125,18 @@ void RangerROSMessenger::LoadParameters() {
 void RangerROSMessenger::SetupSubscription() {
   // publisher
   system_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::SystemState>("/system_state", 10);
+      node_->create_publisher<ranger_msgs::msg::SystemState>("system_state", 10);
   motion_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::MotionState>("/motion_state", 10);
+      node_->create_publisher<ranger_msgs::msg::MotionState>("motion_state", 10);
   actuator_state_pub_ =
-      node_->create_publisher<ranger_msgs::msg::ActuatorStateArray>("/actuator_state", 10);
+      node_->create_publisher<ranger_msgs::msg::ActuatorStateArray>("actuator_state", 10);
   odom_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>(odom_topic_name_, 10);
   battery_state_pub_ =
-      node_->create_publisher<sensor_msgs::msg::BatteryState>("/battery_state", 10);
+      node_->create_publisher<sensor_msgs::msg::BatteryState>("battery_state", 10);
 
   // subscriber
   motion_cmd_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
-      "/cmd_vel", 5, std::bind(&RangerROSMessenger::TwistCmdCallback, this, std::placeholders::_1)
+      "cmd_vel", 5, std::bind(&RangerROSMessenger::TwistCmdCallback, this, std::placeholders::_1)
       );
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
 }
