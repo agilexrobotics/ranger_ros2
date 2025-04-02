@@ -88,6 +88,9 @@ class SpinningModel {
 
   // x1 = x, x2 = y, x3 = theta
   void operator()(const state_type& x, state_type& xd, double) {
+    //to avoid unused variable warning
+    (void)x;
+    
     xd[0] = 0;
     xd[1] = 0;
     xd[2] = u_.w;

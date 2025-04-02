@@ -39,12 +39,12 @@ $ colcon build
     
 * first time use ranger-ros package
    ```
-   $ sudo bash /src/ranger_ros2/ranger_bringup/scripts/setup_can2usb.bash
+   $ sudo bash src/ranger_ros2/ranger_bringup/scripts/setup_can2usb.bash
    ```
    
 * if not the first time use ranger-ros package(Run this command every time you turn off the power) 
    ```
-   $ sudo bash /src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash
+   $ sudo bash src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash
    ```
    
 * Testing command
@@ -58,19 +58,19 @@ $ colcon build
 * Start the base node for ranger
 
     ```shell
-    $ ros2 launch ranger_bringup ranger.launch #for ranger
+    $ ros2 launch ranger_bringup ranger.launch.xml #for ranger
     ```
 
 * Start the base node for ranger_mini_v1
 
     ```shell
-    $ ros2 launch ranger_bringup ranger_mini_v1.launch #for ranger_mini 1.0
+    $ ros2 launch ranger_bringup ranger_mini_v1.launch.xml #for ranger_mini 1.0
     ```
 
 * Start the base node for ranger_mini_v2
 
     ```bash
-    $ ros2 launch ranger_bringup ranger_mini_v2.launch #for ranger_mini 2.0
+    $ ros2 launch ranger_bringup ranger_mini_v2.launch.xml #for ranger_mini 2.0
     ```
     
 * Start the keyboard tele-op node

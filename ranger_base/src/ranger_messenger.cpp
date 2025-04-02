@@ -205,21 +205,57 @@ void RangerROSMessenger::PublishStateToROS() {
     for (int i = 0; i < 8; i++) {
       ranger_msgs::msg::DriverState driver_state_msg;
       driver_state_msg.driver_voltage =
-          actuator_state.actuator_ls_state->driver_voltage;
+          actuator_state.actuator_ls_state[i].driver_voltage;
       driver_state_msg.driver_temperature =
-          actuator_state.actuator_ls_state->driver_temp;
+          actuator_state.actuator_ls_state[i].driver_temp;
       driver_state_msg.motor_temperature =
-          actuator_state.actuator_ls_state->motor_temp;
+          actuator_state.actuator_ls_state[i].motor_temp;
       driver_state_msg.driver_state =
-          actuator_state.actuator_ls_state->driver_state;
+          actuator_state.actuator_ls_state[i].driver_state;
 
       ranger_msgs::msg::MotorState motor_state_msg;
-      actuator_state.actuator_hs_state->rpm =
-          actuator_state.actuator_hs_state->rpm;
-      actuator_state.actuator_hs_state->current =
-          actuator_state.actuator_hs_state->current;
-      actuator_state.actuator_hs_state->pulse_count =
-          actuator_state.actuator_hs_state->pulse_count;
+      motor_state_msg.rpm =
+          actuator_state.actuator_hs_state[i].rpm;
+      motor_state_msg.current =
+          actuator_state.actuator_hs_state[i].current;
+      motor_state_msg.pulse_count =
+          actuator_state.actuator_hs_state[i].pulse_count;
+      
+      // Accéder aux bonnes variables de vitesse en fonction de l'index
+      switch(i) {
+        case 0:
+          motor_state_msg.speed = actuator_state.motor_speeds.speed_1;
+          motor_state_msg.angle = 0;
+          break;
+        case 1:
+          motor_state_msg.speed = actuator_state.motor_speeds.speed_2;
+          motor_state_msg.angle = 0;
+          break;
+        case 2:
+          motor_state_msg.speed = actuator_state.motor_speeds.speed_3;
+          motor_state_msg.angle = 0;
+          break;
+        case 3:
+          motor_state_msg.speed = actuator_state.motor_speeds.speed_4;
+          motor_state_msg.angle = 0;
+          break;
+        case 4:
+          motor_state_msg.speed = 0;
+          motor_state_msg.angle = actuator_state.motor_angles.angle_5;
+          break;
+        case 5:
+          motor_state_msg.speed = 0;
+          motor_state_msg.angle = actuator_state.motor_angles.angle_6;
+          break;
+        case 6:
+          motor_state_msg.speed = 0;
+          motor_state_msg.angle = actuator_state.motor_angles.angle_7;
+          break;
+        case 7:
+          motor_state_msg.speed = 0;
+          motor_state_msg.angle = actuator_state.motor_angles.angle_8;
+          break;
+      }
 
       ranger_msgs::msg::ActuatorState actuator_state_msg;
       actuator_state_msg.id = i;
@@ -457,6 +493,10 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
   x = sqrt(radius * radius + (l / 2) * (l / 2));
   //phi_i = atan((l / 2) / (x - w / 2));
   phi_i = atan((l / 2) / radius);
+  //to avoid unused variable warning
+  (void)w;
+  (void)x;
+
   return k * phi_i;
 }
 
