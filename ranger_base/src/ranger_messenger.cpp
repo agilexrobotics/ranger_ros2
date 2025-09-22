@@ -27,9 +27,13 @@ RangerROSMessenger::RangerROSMessenger(rclcpp::Node::SharedPtr& node){
 
   // connect to robot and setup ROS subscription
   if (robot_type_ == RangerSubType::kRangerMiniV1) {
-    robot_ = std::make_shared<RangerRobot>(true);
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV1);
+  } else if (robot_type_ == RangerSubType::kRangerMiniV2) {
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV2);
+  } else if (robot_type_ == RangerSubType::kRangerMiniV3) {
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRangerMiniV3);
   } else {
-    robot_ = std::make_shared<RangerRobot>(false);
+    robot_ = std::make_shared<RangerRobot>(RangerRobot::Variant::kRanger);
   }
 
   if (port_name_.find("can") != std::string::npos) {
