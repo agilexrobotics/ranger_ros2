@@ -42,7 +42,7 @@ def generate_launch_description():
                 'base_frame': launch.substitutions.LaunchConfiguration('base_frame'),
                 'odom_topic_name': launch.substitutions.LaunchConfiguration('odom_topic_name'),
                 'simulated_robot': launch.substitutions.LaunchConfiguration('simulated_robot'),
-                'publish_odom_tf': launch.substitutions.LaunchConfiguration('control_rate'),
+                'publish_odom_tf': launch.substitutions.LaunchConfiguration('publish_odom_tf'),
         }])
 
     return LaunchDescription([
