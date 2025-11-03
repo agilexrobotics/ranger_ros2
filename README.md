@@ -7,7 +7,8 @@ This repository contains ROS2 support packages for the Ranger robot bases to pro
 * Ranger Mini V1.0
 <img src="./docs/ranger_mini_v1.png" width="350" />
 
-* Ranger Mini V2.0
+* Ranger Mini V2.0 and V3.0 
+
 <img src="./docs/ranger_mini_v2.png" width="350" />
 
 * Ranger
