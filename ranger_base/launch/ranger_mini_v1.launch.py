@@ -43,7 +43,8 @@ def generate_launch_description():
                 'odom_topic_name': launch.substitutions.LaunchConfiguration('odom_topic_name'),
                 'simulated_robot': launch.substitutions.LaunchConfiguration('simulated_robot'),
                 'publish_odom_tf': launch.substitutions.LaunchConfiguration('publish_odom_tf'),
-        }])
+                'robot_model': launch.substitutions.LaunchConfiguration('robot_model'),
+                }])
 
     return LaunchDescription([
         # use_sim_time_arg,
