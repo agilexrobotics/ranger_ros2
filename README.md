@@ -59,21 +59,26 @@ $ colcon build
 * Start the base node for ranger
 
     ```shell
-    $ ros2 launch ranger_bringup ranger.launch #for ranger
+    $ ros2 launch ranger_bringup ranger.launch.py #for ranger
     ```
 
 * Start the base node for ranger_mini_v1
 
     ```shell
-    $ ros2 launch ranger_bringup ranger_mini_v1.launch #for ranger_mini 1.0
+    $ ros2 launch ranger_bringup ranger_mini_v1.launch.py #for ranger_mini 1.0
     ```
 
 * Start the base node for ranger_mini_v2
 
     ```bash
-    $ ros2 launch ranger_bringup ranger_mini_v2.launch #for ranger_mini 2.0
+    $ ros2 launch ranger_bringup ranger_mini_v2.launch.py #for ranger_mini 2.0
     ```
 
+* Start the base node for ranger_mini_v3
+
+    ```bash
+    $ ros2 launch ranger_bringup ranger_mini_v3.launch.py #for ranger_mini 3.0
+    ```
 
 ## ROS interface
 
