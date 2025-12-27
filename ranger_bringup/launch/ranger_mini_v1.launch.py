@@ -36,13 +36,14 @@ def generate_launch_description():
         output='screen',
         emulate_tty=True,
         parameters=[{
-                # 'use_sim_time': launch.substitutions.LaunchConfiguration('use_sim_time'),
+                'use_sim_time': launch.substitutions.LaunchConfiguration('use_sim_time'),
                 'port_name': launch.substitutions.LaunchConfiguration('port_name'),                
                 'odom_frame': launch.substitutions.LaunchConfiguration('odom_frame'),
                 'base_frame': launch.substitutions.LaunchConfiguration('base_frame'),
                 'odom_topic_name': launch.substitutions.LaunchConfiguration('odom_topic_name'),
                 'simulated_robot': launch.substitutions.LaunchConfiguration('simulated_robot'),
                 'publish_odom_tf': launch.substitutions.LaunchConfiguration('publish_odom_tf'),
+                'robot_model': launch.substitutions.LaunchConfiguration('robot_model'),
         }])
 
     return LaunchDescription([
