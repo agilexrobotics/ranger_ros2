@@ -1,0 +1,14 @@
+agx_bringup_node:
+  ros__parameters:
+    debug: False
+    pub_odom_tf: false
+    odom_frame: 'odom'
+    base_frame: 'base_footprint'
+    interface: 'can0'
+
+    track: 0.34
+    wheelbase: 0.39
+    max_linear_speed: 1.5
+    max_angular_speed: 2.0
+    spin_angular_ratio: 1.0
+    linear_speed_ratio: 1.0
