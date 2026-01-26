@@ -10,7 +10,7 @@
 1. 将本仓库克隆到 ROS 工作空间的 `src` 文件夹中：
    ```bash
    cd ~/colcon_ws/src
-   git clone <仓库地址>
+   git clone https://github.com/agilexrobotics/ranger_ros2.git -b air_delta
    ```
 2. 构建包：
    ```bash
