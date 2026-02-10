@@ -93,6 +93,8 @@ void RangerROSMessenger::LoadParameters() {
         RangerMiniV1Params::max_steer_angle_parallel;
     robot_params_.max_round_angle = RangerMiniV1Params::max_round_angle;
     robot_params_.min_turn_radius = RangerMiniV1Params::min_turn_radius;
+      robot_params_.max_steer_angle_ackermann =
+          RangerMiniV1Params::max_steer_angle_ackermann;
   } else {
     if (robot_model_ == "ranger_mini_v2") {
       robot_type_ = RangerSubType::kRangerMiniV2;
@@ -108,6 +110,8 @@ void RangerROSMessenger::LoadParameters() {
           RangerMiniV2Params::max_steer_angle_parallel;
       robot_params_.max_round_angle = RangerMiniV2Params::max_round_angle;
       robot_params_.min_turn_radius = RangerMiniV2Params::min_turn_radius;
+      robot_params_.max_steer_angle_ackermann =
+          RangerMiniV2Params::max_steer_angle_ackermann;
     }
     if (robot_model_ == "ranger_mini_v3") {
       robot_type_ = RangerSubType::kRangerMiniV3;
@@ -123,6 +127,8 @@ void RangerROSMessenger::LoadParameters() {
           RangerMiniV3Params::max_steer_angle_parallel;
       robot_params_.max_round_angle = RangerMiniV3Params::max_round_angle;
       robot_params_.min_turn_radius = RangerMiniV3Params::min_turn_radius;
+      robot_params_.max_steer_angle_ackermann =
+          RangerMiniV3Params::max_steer_angle_ackermann;
     }
      else {
       robot_type_ = RangerSubType::kRanger;
@@ -138,8 +144,12 @@ void RangerROSMessenger::LoadParameters() {
           RangerParams::max_steer_angle_parallel;
       robot_params_.max_round_angle = RangerParams::max_round_angle;
       robot_params_.min_turn_radius = RangerParams::min_turn_radius;
+      robot_params_.max_steer_angle_ackermann =
+          RangerParams::max_steer_angle_ackermann;
     }
   }
+    parking_mode_ = false;
+
 }
 
 void RangerROSMessenger::SetupSubscription() {
@@ -383,7 +393,10 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
   double radius;
 
   // analyze Twist msg and switch motion_mode
-  if (msg->linear.y != 0) {
+  // check for parking mode, only applicable to RangerMiniV2
+  if (parking_mode_ && robot_type_ == RangerSubType::kRangerMiniV2) {
+    return;
+  } else if (msg->linear.y != 0) {
     if (msg->linear.x == 0.0 && robot_type_ == RangerSubType::kRangerMiniV1) {
       motion_mode_ = MotionState::MOTION_MODE_SIDE_SLIP;
       robot_->SetMotionMode(MotionState::MOTION_MODE_SIDE_SLIP);
@@ -402,39 +415,52 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
       robot_->SetMotionMode(MotionState::MOTION_MODE_DUAL_ACKERMAN);
     }
   }
-
   // send motion command to robot
   switch (motion_mode_) {
     case MotionState::MOTION_MODE_DUAL_ACKERMAN: {
-      if (steer_cmd > robot_params_.max_steer_angle_central) {
-        steer_cmd = robot_params_.max_steer_angle_central;
+      if (steer_cmd > robot_params_.max_steer_angle_ackermann) {
+        steer_cmd = robot_params_.max_steer_angle_ackermann;
       }
-      if (steer_cmd < -robot_params_.max_steer_angle_central) {
-        steer_cmd = -robot_params_.max_steer_angle_central;
+      if (steer_cmd < -robot_params_.max_steer_angle_ackermann) {
+        steer_cmd = -robot_params_.max_steer_angle_ackermann;
       }
-      double phi_i = ConvertCentralAngleToInner(steer_cmd);
-      robot_->SetMotionCommand(msg->linear.x, phi_i);
+      robot_->SetMotionCommand(msg->linear.x, steer_cmd);
       break;
     }
     case MotionState::MOTION_MODE_PARALLEL: {
       steer_cmd = atan(msg->linear.y / msg->linear.x);
 
-      if(std::signbit(msg->linear.x)&&msg->linear.x == 0.0)
+      static double last_nonzero_x = 1.0; 
+      
+      if (msg->linear.x != 0.0) {
+          last_nonzero_x = msg->linear.x; 
+      }
+
+      if (std::signbit(msg->linear.x))
       {
         steer_cmd = -steer_cmd;
       }
-      else
-      {
-        steer_cmd = steer_cmd;
-      }
-
+      
       if (steer_cmd > robot_params_.max_steer_angle_parallel) {
         steer_cmd = robot_params_.max_steer_angle_parallel;
       }
       if (steer_cmd < -robot_params_.max_steer_angle_parallel) {
         steer_cmd = -robot_params_.max_steer_angle_parallel;
       }
-      double vel = msg->linear.x >= 0 ? 1.0 : -1.0;
+      double vel = 1.0;
+      
+      if (msg->linear.x == 0.0 && msg->linear.y != 0.0) {
+          // std::cout << "MOTION_MODE_SIDE_SLIP" << std::endl;
+          
+          if (std::signbit(last_nonzero_x)) {
+              steer_cmd = -std::abs(steer_cmd); 
+          } else {
+              steer_cmd = std::abs(steer_cmd);
+          }
+          vel = msg->linear.y >= 0 ? 1.0 : -1.0;
+      } else {
+          vel = msg->linear.x >= 0 ? 1.0 : -1.0;
+      }
       robot_->SetMotionCommand(vel * sqrt(msg->linear.x * msg->linear.x +
                                           msg->linear.y * msg->linear.y),
                                steer_cmd);
@@ -465,6 +491,7 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
   }
 }
 
+
 geometry_msgs::msg::Quaternion RangerROSMessenger::createQuaternionMsgFromYaw(double yaw) {
     tf2::Quaternion q;
     q.setRPY(0, 0, yaw);
@@ -475,7 +502,6 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
                                                   double& radius) {
   double linear = std::abs(msg.linear.x);
   double angular = std::abs(msg.angular.z);
-
   // Circular motion
   radius = linear / angular;
   int k = (msg.angular.z * msg.linear.x) >= 0 ? 1.0 : -1.0;
@@ -483,9 +509,10 @@ double RangerROSMessenger::CalculateSteeringAngle(geometry_msgs::msg::Twist msg,
   double l, w, phi_i, x;
   l = robot_params_.wheelbase;
   w = robot_params_.track;
-  x = sqrt(radius * radius + (l / 2) * (l / 2));
-  //phi_i = atan((l / 2) / (x - w / 2));
-  phi_i = atan((l / 2) / radius);
+  phi_i = atan((l / 2) / (radius - w / 2));
+  // x = sqrt(radius * radius + (l / 2) * (l / 2));
+  // //phi_i = atan((l / 2) / (x - w / 2));
+  // phi_i = atan((l / 2) / radius);
   return k * phi_i;
 }
 

@@ -55,6 +55,7 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
     double max_speed_cmd;
     double max_steer_angle_central;
     double max_steer_angle_parallel;
+    double max_steer_angle_ackermann;
     double max_round_angle;
     double min_turn_radius;
   };
@@ -97,6 +98,7 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
   bool publish_odom_tf_;
 
   uint8_t motion_mode_ = 0;
+  bool parking_mode_;
 
   rclcpp::Publisher<ranger_msgs::msg::SystemState>::SharedPtr system_state_pub_;
   rclcpp::Publisher<ranger_msgs::msg::MotionState>::SharedPtr motion_state_pub_;

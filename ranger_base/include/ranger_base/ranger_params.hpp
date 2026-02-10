@@ -24,6 +24,8 @@ struct RangerParams {
   static constexpr double max_steer_angle_parallel = 1.570;  // 40 degree
   static constexpr double max_round_angle = 1.0057;       // 40 degreeF
   static constexpr double min_turn_radius = 0.810330349;
+  static constexpr double max_steer_angle_ackermann = 0.6981; 
+
 };
 
 struct RangerMiniV1Params {
@@ -40,6 +42,8 @@ struct RangerMiniV1Params {
   static constexpr double max_steer_angle_parallel = 0.6981;    // 40 degree
   static constexpr double max_round_angle = 0.935671;
   static constexpr double min_turn_radius = 0.536;
+  static constexpr double max_steer_angle_ackermann = 0.6981;
+
 };
 
 struct RangerMiniV2Params {
@@ -56,6 +60,8 @@ struct RangerMiniV2Params {
   static constexpr double max_steer_angle_parallel = 1.570;     // 180 degree
   static constexpr double max_round_angle = 0.935671;
   static constexpr double min_turn_radius = 0.4764;
+  static constexpr double max_steer_angle_ackermann = 0.6981;
+
 };
 
 struct RangerMiniV3Params {
@@ -71,7 +77,9 @@ struct RangerMiniV3Params {
   static constexpr double max_steer_angle_central = 0.4782;  //~= 27.40 degree
   static constexpr double max_steer_angle_parallel = 1.570;     // 180 degree
   static constexpr double max_round_angle = 0.935671;
-  static constexpr double min_turn_radius = 0.4764;
+  static constexpr double min_turn_radius = 0.47644;
+  static constexpr double max_steer_angle_ackermann = 0.6981;
+
 };
 
 }  // namespace westonrobot
