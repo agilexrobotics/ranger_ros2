@@ -26,7 +26,7 @@ $ sudo apt install -y ros-$ROS_DISTRO-teleop-twist-keyboard
 $ cd ~/catkin_ws/src
 $ git clone https://github.com/agilexrobotics/ranger_ros2.git -b air_delta
 $ cd ..
-$ catkin_make
+$ colcon build 
 ```
 
 3. Setup CAN-To-USB adapter
