@@ -24,6 +24,7 @@ sudo apt install libasio-dev libboost-all-dev
 2. Clone and build the packages in a workspace
 
 ```bash
+mkdir -p ~/agilex_ws/src
 cd ~/agilex_ws/src
 git clone https://github.com/agilexrobotics/ugv_sdk.git
 git clone -b jazzy https://github.com/S-abk/ranger_ros2.git
@@ -39,12 +40,12 @@ colcon build
     
 * first time use ranger-ros package
    ```bash
-   sudo bash /src/ranger_ros2/ranger_bringup/scripts/setup_can2usb.bash
+   sudo bash ./src/ranger_ros2/ranger_bringup/scripts/setup_can2usb.bash
    ```
    
 * if not the first time use ranger-ros package(Run this command every time you turn off the power) 
    ```bash
-   sudo bash /src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash
+   sudo bash ./src/ranger_ros2/ranger_bringup/scripts/bringup_can2usb.bash
    ```
    
 * Testing command
