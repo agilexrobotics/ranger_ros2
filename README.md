@@ -26,7 +26,7 @@ sudo apt install libasio-dev libboost-all-dev
 ```bash
 cd ~/agilex_ws/src
 git clone https://github.com/agilexrobotics/ugv_sdk.git
-git clone https://github.com/agilexrobotics/ranger_ros2.git
+git clone -b jazzy https://github.com/S-abk/ranger_ros2.git
 cd ..
 colcon build
 ```
