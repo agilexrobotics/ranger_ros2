@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Ranger Mini v3 URDF / xacro
+  Ported from agilexrobotics/ugv_gazebo_sim ranger_mini_v3/urdf/ranger_mini.xacro
+  for ROS 2 Jazzy + Gazebo Harmonic.
+
+  Phase 1: kinematic + visual description only. ros2_control + gz plugins land
+  in ranger_mini_v3_sim/urdf/ranger_mini.gazebo.xacro and are xacro:included
+  from the simulation launch — NOT from this file — so this package stays
+  consumable by anyone who only wants the model in RViz / MoveIt / nav stack.
+-->
+<robot name="ranger_mini_v3" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- ============================================================
+       Geometry parameters
+       (Wheelbase / track are taken from the original origins:
+        FL/FR x = +0.25, RL/RR x = -0.25  -> wheelbase 0.50 m
+        L  y = +0.19,    R  y = -0.19    -> track     0.38 m
+        The original RR was -0.23 / -0.206 — a typo. Fixed below.)
+       ============================================================ -->
+  <xacro:property name="wheelbase_half" value="0.25"/>
+  <xacro:property name="track_half"     value="0.19"/>
+  <xacro:property name="steer_z"        value="-0.1"/>
+  <xacro:property name="wheel_drop"     value="-0.12"/>
+  <xacro:property name="wheel_radius"   value="0.09"/>
+  <xacro:property name="wheel_width"    value="0.08"/>
+  <xacro:property name="wheel_mass"     value="8.0"/>
+  <xacro:property name="steer_mass"     value="1.0"/>
+  <xacro:property name="steer_limit"    value="2.1"/>
+  <xacro:property name="steer_effort"   value="5.0"/>
+  <xacro:property name="steer_vel"      value="6.28"/>
+  <xacro:property name="mesh_pkg"       value="package://ranger_mini_v3_description/meshes"/>
+
+  <!-- ============================================================
+       Base link
+       ============================================================ -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.0242698 -0.0030308 0.0544267" rpy="0 0 0"/>
+      <mass value="10.0"/>
+      <inertia ixx="0.1354" ixy="0.0" ixz="0.0"
+               iyy="0.2417" iyz="0.0" izz="0.3085"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="${mesh_pkg}/ranger_base.dae" scale="1000 1000 1000"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.1" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.5 0.35 0.2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- A common nav convention: base_footprint at ground level under base_link.
+       Useful for nav2 and TF consumers that expect it. -->
+  <link name="base_footprint"/>
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="base_footprint"/>
+    <origin xyz="0 0 ${steer_z + wheel_drop - wheel_radius}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ============================================================
+       Macros: one steering hub + one drive wheel per corner.
+       ============================================================ -->
+
+  <!-- Steering hub (revolute joint attached to base_link). -->
+  <xacro:macro name="steering_hub" params="prefix x y mesh_yaw">
+    <link name="${prefix}_steering_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0.0437" rpy="0 0 0"/>
+        <mass value="${steer_mass}"/>
+        <inertia ixx="0.006363" ixy="0.0" ixz="0.0"
+                 iyy="0.006363" iyz="0.0" izz="0.010465"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${mesh_yaw}"/>
+        <geometry>
+          <mesh filename="${mesh_pkg}/steering_wheel.dae" scale="10 10 10"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.001" length="0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}_steering_joint" type="revolute">
+      <origin xyz="${x} ${y} ${steer_z}" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child  link="${prefix}_steering_wheel_link"/>
+      <!-- Original used axis (0,0,-1); we keep that so positive command =
+           CW seen from above, matching the real-driver kinematic model. -->
+      <axis xyz="0 0 -1"/>
+      <limit effort="${steer_effort}" velocity="${steer_vel}"
+             lower="${-steer_limit}" upper="${steer_limit}"/>
+      <dynamics damping="0.1" friction="0.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Drive wheel (continuous joint hanging off the steering hub). -->
+  <xacro:macro name="drive_wheel" params="prefix mesh_roll">
+    <link name="${prefix}_wheel_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="0.02047" ixy="0.0" ixz="0.0"
+                 iyy="0.02047" iyz="0.0" izz="0.0324"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${mesh_roll} 0 0"/>
+        <geometry>
+          <mesh filename="${mesh_pkg}/wheel_v3.dae" scale="10 10 10"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.005" rpy="1.5707963 0 0"/>
+        <geometry>
+          <cylinder length="${wheel_width}" radius="${wheel_radius}"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}_wheel" type="continuous">
+      <origin xyz="0 0 ${wheel_drop}" rpy="0 0 0"/>
+      <parent link="${prefix}_steering_wheel_link"/>
+      <child  link="${prefix}_wheel_link"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.05" friction="0.0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- ============================================================
+       Instantiate four corners.
+       Mesh-yaw / mesh-roll values preserve the visual orientations
+       used in the original URDF (some wheels' DAEs are mirrored).
+       ============================================================ -->
+
+  <!-- Front-Right -->
+  <xacro:steering_hub prefix="fr" x="${ wheelbase_half}" y="${-track_half}" mesh_yaw="0"/>
+  <xacro:drive_wheel  prefix="fr" mesh_roll="3.14"/>
+
+  <!-- Front-Left -->
+  <xacro:steering_hub prefix="fl" x="${ wheelbase_half}" y="${ track_half}" mesh_yaw="3.14"/>
+  <xacro:drive_wheel  prefix="fl" mesh_roll="0"/>
+
+  <!-- Rear-Left -->
+  <xacro:steering_hub prefix="rl" x="${-wheelbase_half}" y="${ track_half}" mesh_yaw="3.14"/>
+  <xacro:drive_wheel  prefix="rl" mesh_roll="0"/>
+
+  <!-- Rear-Right  (FIX: original had (-0.23, -0.206); standardized here) -->
+  <xacro:steering_hub prefix="rr" x="${-wheelbase_half}" y="${-track_half}" mesh_yaw="0"/>
+  <xacro:drive_wheel  prefix="rr" mesh_roll="3.14"/>
+
+</robot>
