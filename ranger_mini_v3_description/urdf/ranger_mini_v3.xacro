@@ -18,8 +18,8 @@
         L  y = +0.19,    R  y = -0.19    -> track     0.38 m
         The original RR was -0.23 / -0.206 — a typo. Fixed below.)
        ============================================================ -->
-  <xacro:property name="wheelbase_half" value="0.25"/>
-  <xacro:property name="track_half"     value="0.19"/>
+  <xacro:property name="wheelbase_half" value="0.247"/>
+  <xacro:property name="track_half"     value="0.182"/>
   <xacro:property name="steer_z"        value="-0.1"/>
   <xacro:property name="wheel_drop"     value="-0.12"/>
   <xacro:property name="wheel_radius"   value="0.09"/>
