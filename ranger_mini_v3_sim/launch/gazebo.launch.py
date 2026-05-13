@@ -1,4 +1,24 @@
-"""Gazebo bringup for Ranger Mini v3 (Phase 3 checkpoint B).
+"""Gazebo bringup for Ranger Mini v3 — PARTIAL (no controllers).
+
+==============================================================================
+WARNING: This launch does NOT load ros2_control controllers.
+
+If you publish wheel-command topics with this launch alone, NO ONE will
+subscribe to them, and the wheels will not move. The robot will appear
+stationary even with correct cmd_vel input.
+
+For the FULL sim (gz + robot + controllers + bridge), use:
+    ros2 launch ranger_mini_v3_sim gazebo_full.launch.py
+
+This file remains useful for:
+- Debugging URDF spawning / mesh resolution / world setup
+- Sanity-checking that gz starts cleanly with the robot
+- Anything that does not need active control of the joints
+==============================================================================
+
+(Original docstring follows.)
+
+Gazebo bringup for Ranger Mini v3 (Phase 3 checkpoint B).
 
 Starts gz sim with the ground-plane world, spawns the robot
 at (0, 0, 0.32), starts robot_state_publisher and a /clock
@@ -114,14 +134,17 @@ def generate_launch_description():
     )
 
     # /clock bridge so use_sim_time consumers (rsp, controllers,
-    # tools) sync to gz simulation time.
+    # tools) sync to gz simulation time. Uses YAML config form
+    # to set RELIABLE QoS on the ROS-side publisher — default
+    # CLI form uses BEST_EFFORT which can drop messages under
+    # gz's high /clock publish rate (R10 observed, R11 couldn't
+    # reproduce — applying as defensive hardening regardless).
+    bridge_yaml = PathJoinSubstitution([sim_pkg, "config", "ros_gz_bridge.yaml"])
     clock_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
         name="clock_bridge",
-        arguments=[
-            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-        ],
+        parameters=[{"config_file": bridge_yaml}],
         output="screen",
     )
 

@@ -1,0 +1,14 @@
+# YAML config for ros_gz_bridge.parameter_bridge.
+# Bridges /clock from gz → ROS with explicit RELIABLE QoS so
+# rclpy auto-subscribers (use_sim_time=True consumers) don't
+# drop messages under gz's high /clock publish rate. Default
+# parameter_bridge args bridge with the source-side QoS, which
+# for /clock is BEST_EFFORT and causes message loss.
+- topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+  publisher_queue: 1
+  # ROS-side publisher QoS — what consumers will subscribe to.
+  # KEEP_LAST(1) RELIABLE: consumers always see the latest tick
+  # and won't miss any during congestion.

@@ -95,9 +95,9 @@
       <origin xyz="${x} ${y} ${steer_z}" rpy="0 0 0"/>
       <parent link="base_link"/>
       <child  link="${prefix}_steering_wheel_link"/>
-      <!-- Original used axis (0,0,-1); we keep that so positive command =
-           CW seen from above, matching the real-driver kinematic model. -->
-      <axis xyz="0 0 -1"/>
+      <!-- Steering axis (0,0,1): standard ROS REP-103 convention,
+           positive joint command = CCW from above = left turn. -->
+      <axis xyz="0 0 1"/>
       <limit effort="${steer_effort}" velocity="${steer_vel}"
              lower="${-steer_limit}" upper="${steer_limit}"/>
       <dynamics damping="0.1" friction="0.0"/>

@@ -244,3 +244,147 @@ edit it.
   publish /odom + /system_state + /motion_state +
   /actuator_state + /battery_state to match the real driver.
 
+
+## 2026-05-12 — Rounds 07 / 07b / 07c: Phase 4 setup + DUAL_ACKERMAN complete
+
+- Squash-merged phase-2-ros2-control into jazzy (R07).
+- URDF dimensions aligned with real-robot RangerMiniV3Params:
+  wheelbase 0.494 m, track 0.364 m (R07).
+- Created phase-4-messenger branch off updated jazzy.
+- Built ranger_msgs (R07b), ugv_sdk (R07c), ranger_base,
+  ranger_bringup as part of full workspace sweep. All
+  siblings now in install/ — no more "missing dep" surprises.
+- Created ranger_mini_v3_sim_messenger ament_python package
+  and implemented sim_messenger node:
+  - Subscribes /cmd_vel, publishes /odom + 8 controller cmds
+  - DUAL_ACKERMAN mode math ported from real driver
+  - Per-wheel split: inner = atan(W/2 / R),
+                      outer = atan(W/2 / (R+T)),
+                      front/rear mirror-symmetric
+  - RK4 odometry integrator (10 substeps per dt)
+- PARALLEL / SPINNING modes recognized but commands zeroed
+  + one-shot warning. Round 08 implements them.
+- Per-wheel speed uniform (linear.x / wheel_radius) in R07;
+  ICR-aware per-wheel scaling deferred to Round 08 if visible
+  slip becomes a problem.
+- KNOWN BUG (R07c): steering-sign convention — messenger
+  outputs positive wheel angles for left-turn cmd_vel, but URDF
+  axis (0,0,-1) interprets positive as CW (right turn). Forward
+  drive is fine; arc tests turn the wrong direction in gz while
+  /odom integrates the commanded direction. See round 07c
+  handoff Open Questions for fix options. Recommend Option A
+  (sign-flip in messenger).
+
+
+## 2026-05-12 — Round 08: Fix URDF axis + PARALLEL/SPINNING modes
+
+- **CORRECTION to earlier bootstrap rule:** URDF steering axis
+  is now (0, 0, 1), not (0, 0, -1). The earlier rule was
+  based on incomplete understanding of the real driver's
+  internal angle convention. Standard ROS REP-103 applies:
+  positive joint command = CCW about z = left turn.
+- Implemented PARALLEL mode: common steering angle =
+  atan2(linear.y, linear.x), speed = hypot. Side-slip
+  sub-case (x=0,y!=0) handled with last_nonzero_x.
+- Implemented SPINNING mode: tangent-to-radial wheel angles
+  (with joint-range wrap + velocity sign flip on wrap);
+  wheel speeds sized for commanded body angular velocity.
+- /odom integration uses ParallelModel and SpinningModel
+  per real driver's kinematics_model.hpp.
+- Fixed inherited R07 bug: calculate_steering_angle had a
+  ZeroDivisionError on pure-spin commands (linear.x=0).
+  Smalleha's div-by-zero guard backported to Python.
+- All four motion modes now functional. R09 adds the mock
+  state publishers (/system_state, /motion_state, etc.).
+
+
+## 2026-05-12 — Round 09: Phase 4 complete (state publishers)
+
+- Added /system_state, /motion_state, /actuator_state,
+  /battery_state publishers to sim_messenger. Topic types
+  and field population match real driver exactly
+  (ranger_base/src/ranger_messenger.cpp L195-283).
+- Subscribed to /joint_states to populate ActuatorStateArray
+  with real gz values for motor_angles and motor_speeds.
+- Static defaults for fields not modeled in sim:
+    battery 24V, driver temp 35°C, motor temp 40°C,
+    current 0A (motor) / -1A (battery), SoC 1.0.
+- Cleaned up stale xacro comment about (0,0,-1) convention
+  (corrected in R08 but the rationale comment was left
+  behind).
+- Added PARALLEL side-slip sign-combination unit tests
+  (R08 OQ4). All 6 colcon tests pass.
+- **Phase 4 complete.** Sim now has full interface parity
+  with the real driver: same topic names, types, motion-
+  mode semantics. Application code (teleop, nav2, behavior
+  trees) is sim/real-portable.
+
+Remaining work:
+- Squash-merge phase-4-messenger to jazzy.
+- Phase 5: interface-parity audit against the real driver
+  (turn on the real driver, run sim+real side-by-side,
+  confirm topics + QoS match).
+- Phase 6 (optional): polish — sensors, worlds, sim time
+  tuning, ros_gz_bridge static transforms cleanup.
+
+
+## 2026-05-12 — Rounds 10 + 11 + 11b: /clock QoS hardening
+
+- R10 observed /odom stuck (gz moving, messenger frozen).
+- R11 baseline couldn't reproduce: mean_dt = 0.0200s,
+  /odom and gz agreed within 5mm. R10 symptom appears
+  state-dependent.
+- R11b applied defensive QoS fix anyway: explicit RELIABLE
+  + KEEP_LAST(1) on /clock via parameter_bridge YAML
+  config form.
+- Added permanent tick_diag INFO log (every 50 ticks) for
+  future clock-issue visibility.
+- All four motion modes still functional post-fix.
+
+Phase 4 work complete. Next: squash-merge phase-4-messenger
+to jazzy.
+
+
+## 2026-05-12 — Round 13: Sim README + R12 correction
+
+- Added ranger_mini_v3_sim/README.md documenting the sim
+  launch file hierarchy. The key clarification: use
+  gazebo_full.launch.py (controllers loaded), not the
+  shorter-named gazebo.launch.py (no controllers, robot
+  will appear stationary).
+- Added a prominent warning docstring at the top of
+  gazebo.launch.py pointing users to gazebo_full.launch.py.
+- Appended an architect correction to R12's handoff: the
+  "transient DDS state" conclusion was wrong; the actual
+  cause was using the wrong launch file.
+
+Phase 4 is genuinely complete and functional. Recommended
+next: squash-merge phase-4-messenger to jazzy.
+
+
+
+## Standing principle (added after R13 retro)
+
+**When a user reports a symptom, the first diagnostic step is
+"what command did you actually type?" — not "let me run my own
+commands and see if I can reproduce."**
+
+R12 spent a full round chasing a phantom DDS state issue.
+Claude Code's diagnostic ran the correct launch command;
+the user had been running the wrong one. The verification
+showed everything working but proved nothing about the
+user's experience. The two were testing different things.
+
+Future blocked / failing rounds that follow a user-reported
+symptom should:
+1. First ask the user for the literal commands they typed and
+   the verbatim error / observation they saw.
+2. Reproduce on the user's exact command sequence before
+   running anything else.
+3. Only then run independent diagnostics if step 2 doesn't
+   reveal the cause.
+
+Cost: one short user message. Benefit: avoiding the failure
+mode where a confounded variable (different launch command,
+different env, different terminal state) leads to a
+confident wrong diagnosis.
