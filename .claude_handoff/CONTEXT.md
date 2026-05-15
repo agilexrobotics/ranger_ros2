@@ -419,3 +419,16 @@ divergence to the architect.
 R16 was halted by R15a's still-unpushed handoff colliding
 with an operator README fix. Clean lesson for the workflow.
 
+
+## 2026-05-14 — Round 16 + 16b: Phase 5 fixes (mock values + QoS)
+
+- R16 halted on R15a's unpushed branch divergence with
+  operator's README fix. Standing principle added: pre-flight
+  must include rebase if branch diverged.
+- R16b rebased cleanly, then applied 7 alignment patches:
+  battery voltage/percentage/present, driver
+  voltage/temp/motor_temp/state, /cmd_vel QoS.
+- All values now match what consumers would see from the
+  real driver per R15b empirical capture.
+- motion_mode behavior divergence pending R17 investigation.
+
