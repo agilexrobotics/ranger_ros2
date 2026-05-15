@@ -47,14 +47,14 @@ MAX_STEER_PARALLEL  = 1.570               # rad
 # State-mock constants (sim defaults; real values come from
 # ranger_base/src/ranger_messenger.cpp populated from CAN.)
 # ============================================================
-SIM_BATTERY_VOLTAGE = 24.0       # V (typical 24V Li-ion pack)
+SIM_BATTERY_VOLTAGE = 49.6       # 48V Li-ion pack; real reports ~50.2V at full       # V (typical 24V Li-ion pack)
 SIM_BATTERY_CURRENT = -1.0       # A (negative = discharging)
 SIM_BATTERY_TEMP    = 25.0       # °C
-SIM_BATTERY_SOC     = 1.0        # fraction (0..1)
-SIM_DRIVER_VOLTAGE  = 24.0       # V (driver bus = battery)
-SIM_DRIVER_TEMP     = 35.0       # °C (warm operating)
-SIM_MOTOR_TEMP      = 40.0       # °C
-SIM_DRIVER_STATE_OK = 0          # 0 = no faults
+SIM_BATTERY_SOC     = 100.0      # PERCENT (0..100) to match real driver; sensor_msgs/BatteryState convention is 0..1 but real driver uses 0..100
+SIM_DRIVER_VOLTAGE  = 49.5       # V (driver bus = battery; real reports 49.5)
+SIM_DRIVER_TEMP     = 40.0       # °C (real reports 40 at normal operating temp)
+SIM_MOTOR_TEMP      = 23.0       # °C (real reports 23 — motors run cool)
+SIM_DRIVER_STATE_OK = 64         # observed value on real robot during normal operation; status bitmask bits not yet documented (likely "active/healthy")
 # Actuator-id mapping (matches real driver's ordering of the
 # 8 actuators in ActuatorStateArray; the real CAN frames put
 # 4 steering then 4 drive). The map is sim-specific because
@@ -362,11 +362,11 @@ class SimMessenger(Node):
         self._last_used_speed = 0.0     # parallel mode odom
         self._last_used_angular_z = 0.0 # spinning mode odom
 
-        # QoS: BestEffort for /cmd_vel (matches typical teleop pubs),
-        # Reliable for /odom (downstream usually needs every sample).
+        # QoS: Reliable for /cmd_vel (matches real driver per Phase 5 audit,
+        #   R15b); Reliable for /odom (downstream usually needs every sample).
         cmd_qos = QoSProfile(
             depth=5,
-            reliability=ReliabilityPolicy.BEST_EFFORT,
+            reliability=ReliabilityPolicy.RELIABLE,
             history=HistoryPolicy.KEEP_LAST,
         )
         odom_qos = QoSProfile(
@@ -763,7 +763,7 @@ class SimMessenger(Node):
         batt.power_supply_technology = (
             BatteryState.POWER_SUPPLY_TECHNOLOGY_LION
         )
-        batt.present = True   # the real driver sets NaN here but
+        batt.present = False  # match real driver NaN-cast quirk (see R15b)   # the real driver sets NaN here but
                               # `present` is bool — interpret as
                               # "battery present in sim"
         self.battery_state_pub.publish(batt)
