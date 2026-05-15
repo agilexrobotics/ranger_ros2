@@ -447,3 +447,23 @@ Standing note for the architect: when writing non-trivial
 patch anchors, verify against the actual file content
 before writing the prompt, not from memory.
 
+
+## 2026-05-15 — Rounds 17 + 18: Phase 5 closed
+
+- R17: continuous-capture motion_mode investigation on real
+  robot. Resolved: real driver DOES switch modes during
+  spin/tight_curve, exactly like sim. R15b's snapshot
+  timing was the artifact, not the sim.
+- R17 secondary finding: real driver broadcasts a single
+  steering value across all 8 actuator_state entries; sim
+  publishes per-wheel. Preserved as intentional sim
+  improvement.
+- R18: Phase 5 parity report committed
+  (.claude_handoff/phase5_parity_report.md); README has
+  new "Parity with real robot" section.
+
+**Phase 5 complete.** Sim is a drop-in replacement for the
+real driver. All 7 message schemas match bit-for-bit; all
+action items from R15 resolved or documented; no outstanding
+bugs.
+
