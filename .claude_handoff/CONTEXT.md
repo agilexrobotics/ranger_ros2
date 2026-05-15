@@ -401,3 +401,21 @@ confident wrong diagnosis.
   handoff for cross-machine comparison against the real
   driver (to be captured by operator in next sub-round).
 
+
+## 2026-05-14 — Standing principle (added after R16 halt)
+
+**Pre-flight must include a rebase check.** When the local
+branch has diverged from origin (operator pushed something
+in parallel — README fixes, small docs, etc.), the round's
+substantive work must NOT proceed until the divergence is
+resolved. Default action: `git pull --rebase origin <branch>`
+and push, then start the round's actual work.
+
+This applies to all future rounds. The agent's pre-flight
+step should check for divergence and either resolve it
+directly (if a clean rebase) or halt and surface the
+divergence to the architect.
+
+R16 was halted by R15a's still-unpushed handoff colliding
+with an operator README fix. Clean lesson for the workflow.
+
