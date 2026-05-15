@@ -388,3 +388,16 @@ Cost: one short user message. Benefit: avoiding the failure
 mode where a confounded variable (different launch command,
 different env, different terminal state) leads to a
 confident wrong diagnosis.
+
+## 2026-05-14 — Round 15a: Phase 5 sim-side topic + behavior inventory
+
+- DOMAIN_ID=45 (matching real robot), RMW=rmw_fastrtps_cpp.
+- Captured ros2 topic info --verbose for the 8 parity topics.
+- Captured a sample message from each publish topic to
+  document field-level schema.
+- Captured BEFORE/AFTER /odom, /motion_state, /actuator_state
+  for three Twist patterns: forward, arc_left, spin.
+- All data saved into /tmp/r15_audit_sim/ and pasted into
+  handoff for cross-machine comparison against the real
+  driver (to be captured by operator in next sub-round).
+
