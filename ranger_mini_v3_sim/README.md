@@ -95,8 +95,25 @@ the Twist content. Same logic as the real driver:
 symptoms and fix (already in place via
 `config/ros_gz_bridge.yaml`).
 
-**Topic type errors when echoing `/system_state` etc.** The
-ros2 daemon's type cache has gone stale: `ros2 daemon stop && ros2 daemon start`.
+**Topic type errors when echoing `/system_state` or other
+`ranger_msgs/*` topics** ("invalid type" / "Could not load the type").
+The ros2 daemon caches message-type schemas per shell-environment
+snapshot. If the daemon started before you sourced
+`install/setup.bash`, or if it was started by a previous session
+in a different environment, it won't recognize the workspace's
+message types.
+
+Recipe:
+```bash
+ros2 daemon stop
+ros2 daemon start
+```
+
+Then retry the echo. This recurs more often than you'd expect —
+any time you have multiple ROS workspaces, switch DOMAIN_IDs, or
+return to a long-lived session. If you find yourself running
+this often, consider sourcing `install/setup.bash` from your
+`.bashrc` for shells you use for ROS work.
 
 **DDS state accumulation across many sessions** (rare). If
 many ros2 nodes have exited ungracefully, FastDDS shared

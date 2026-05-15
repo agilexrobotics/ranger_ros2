@@ -47,7 +47,7 @@ MAX_STEER_PARALLEL  = 1.570               # rad
 # State-mock constants (sim defaults; real values come from
 # ranger_base/src/ranger_messenger.cpp populated from CAN.)
 # ============================================================
-SIM_BATTERY_VOLTAGE = 49.6       # 48V Li-ion pack; real reports ~50.2V at full       # V (typical 24V Li-ion pack)
+SIM_BATTERY_VOLTAGE = 49.6       # 48V Li-ion pack; real reports ~50.2V at full
 SIM_BATTERY_CURRENT = -1.0       # A (negative = discharging)
 SIM_BATTERY_TEMP    = 25.0       # °C
 SIM_BATTERY_SOC     = 100.0      # PERCENT (0..100) to match real driver; sensor_msgs/BatteryState convention is 0..1 but real driver uses 0..100
@@ -763,9 +763,7 @@ class SimMessenger(Node):
         batt.power_supply_technology = (
             BatteryState.POWER_SUPPLY_TECHNOLOGY_LION
         )
-        batt.present = False  # match real driver NaN-cast quirk (see R15b)   # the real driver sets NaN here but
-                              # `present` is bool — interpret as
-                              # "battery present in sim"
+        batt.present = False  # match real driver NaN-cast quirk (see R15b)
         self.battery_state_pub.publish(batt)
 
     # --------------------------------------------------------
