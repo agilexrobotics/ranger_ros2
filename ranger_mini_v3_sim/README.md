@@ -77,6 +77,47 @@ the Twist content. Same logic as the real driver:
 | `y ≠ 0`                              | PARALLEL           | All four wheels point same direction (atan2 of x,y); body translates without yawing. |
 | `x = 0, y ≠ 0`                       | PARALLEL (side-slip subcase) | All wheels at ±π/2; body crabs sideways. |
 
+## Parity with real robot
+
+Phase 5 audit (rounds 15a, 15b, 17) compared this sim
+against the real Ranger Mini v3 driver on the same ROS 2
+graph. Headline result: **all 6 message schemas match
+bit-for-bit** (DDS RIHS01 type hashes identical). Sim and
+real are drop-in compatible from any application's
+perspective.
+
+Full parity report: `.claude_handoff/phase5_parity_report.md`.
+
+### Things that differ between sim and real
+
+These are NOT bugs — they're either intentional sim
+improvements or documented gaps.
+
+- **`/actuator_state.motor_angles`**: sim publishes
+  per-wheel signed values; real driver broadcasts the
+  single commanded setpoint magnitude across all 8
+  entries. Sim is more informative (intentional).
+- **`/actuator_state.motor.pulse_count`**: sim hardcodes 0;
+  real driver reports real encoder counts. Gap; only
+  matters if you want encoder-fusion testing.
+- **`/odom`**: sim is integrated from commanded twist (no
+  slip); real driver derives from encoders. Equivalent
+  under nominal driving; sim is slip-free by design.
+- **`/battery_state.voltage`**: sim reports 49.6V; real
+  driver has a 10× scaling bug and reports 496V. Sim is
+  correct.
+
+### Things that match exactly
+
+- All 7 message schemas (cmd_vel, odom, system_state,
+  motion_state, actuator_state, battery_state, tf)
+- Motion mode auto-switching: both stacks flip motion_mode
+  to 2 (SPINNING) for tight curves and pure spin commands
+- Sign convention: positive Y on /odom for left turn (ROS
+  REP-103 compliant)
+- Mock state defaults (post-R16): battery voltage,
+  temperatures, driver_state code, percentage scale, etc.
+
 ## Troubleshooting
 
 **Wheels don't move when I send cmd_vel.** Check:
