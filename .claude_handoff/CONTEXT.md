@@ -432,3 +432,18 @@ with an operator README fix. Clean lesson for the workflow.
   real driver per R15b empirical capture.
 - motion_mode behavior divergence pending R17 investigation.
 
+
+## 2026-05-14 — Round 16c/d: comment cleanup + daemon docs
+
+- R16c halted at step 4b on anchor whitespace drift (3rd
+  recurrence). Steps 0-3 succeeded; on-disk source
+  cleanups preserved.
+- R16d resumed with verified-observed anchor; README
+  patch applied cleanly.
+- All R16 work now committed: 8 parity-audit fixes +
+  cosmetic cleanup + README troubleshooting expansion.
+
+Standing note for the architect: when writing non-trivial
+patch anchors, verify against the actual file content
+before writing the prompt, not from memory.
+
