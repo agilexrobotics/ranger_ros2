@@ -506,6 +506,7 @@ void RangerROSMessenger::ResetOdomCallback(const std_srvs::srv::Empty::Request::
   offset_position_x_ = -position_x_;
   offset_position_y_ = -position_y_;
   offset_theta_ = -theta_;
+  RCLCPP_INFO(node_->get_logger(), "Odometry reset.");
 }
 
 geometry_msgs::msg::Quaternion RangerROSMessenger::createQuaternionMsgFromYaw(double yaw) {
