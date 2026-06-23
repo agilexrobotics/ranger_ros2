@@ -112,3 +112,5 @@ $ colcon build
 * /cmd_vel (geometry_msgs::Twist)
 
 ### Services
+
+* /reset_odom (std_srvs::Empty)

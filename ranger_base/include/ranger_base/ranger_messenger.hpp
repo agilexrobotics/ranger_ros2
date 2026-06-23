@@ -27,6 +27,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <sensor_msgs/msg/battery_state.hpp>
+#include <std_srvs/srv/empty.hpp>
 
 //third libaray inclue
 #include "ugv_sdk/details/robot_base/ranger_base.hpp"
@@ -73,6 +74,8 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
   void PublishStateToROS();
   void PublishSimStateToROS(double linear, double angular);
   void TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr msg);
+  void ResetOdomCallback(const std_srvs::srv::Empty::Request::SharedPtr request,
+    const std_srvs::srv::Empty::Response::SharedPtr response);
   double CalculateSteeringAngle(geometry_msgs::msg::Twist msg, double& radius);
   void UpdateOdometry(double linear, double angular, double angle, double dt);
   geometry_msgs::msg::Quaternion createQuaternionMsgFromYaw(double yaw);
@@ -108,11 +111,16 @@ class RangerROSMessenger : public std::enable_shared_from_this<RangerROSMessenge
 
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr motion_cmd_sub_;
 
+  rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_odom_srv_;
+
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   // odom variables
   rclcpp::Time last_time_;
   rclcpp::Time current_time_;
+  double offset_position_x_ = 0.0;
+  double offset_position_y_ = 0.0;
+  double offset_theta_ = 0.0;
   double position_x_ = 0.0;
   double position_y_ = 0.0;
   double theta_ = 0.0;
