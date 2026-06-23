@@ -168,6 +168,11 @@ void RangerROSMessenger::SetupSubscription() {
   motion_cmd_sub_ = node_->create_subscription<geometry_msgs::msg::Twist>(
       "/cmd_vel", 5, std::bind(&RangerROSMessenger::TwistCmdCallback, this, std::placeholders::_1)
       );
+
+  // service
+  reset_odom_srv_ = node_->create_service<std_srvs::srv::Empty>(
+    "reset_odom", std::bind(&RangerROSMessenger::ResetOdomCallback, this, std::placeholders::_1, std::placeholders::_2));
+
   tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(node_);
 }
 
@@ -333,8 +338,13 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
     theta_ = x[2];
   }
 
+  // account for odom reset offset
+  double final_position_x_ = position_x_ + offset_position_x_;
+  double final_position_y_ = position_y_ + offset_position_y_;
+  double final_theta_ = theta_ + offset_theta_;
+
   // update odometry topics
-  geometry_msgs::msg::Quaternion odom_quat = createQuaternionMsgFromYaw(theta_);
+  geometry_msgs::msg::Quaternion odom_quat = createQuaternionMsgFromYaw(final_theta_);
 
   // publish odometry and tf messages
   nav_msgs::msg::Odometry odom_msg;
@@ -342,8 +352,8 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
   odom_msg.header.frame_id = odom_frame_;
   odom_msg.child_frame_id = base_frame_;
 
-  odom_msg.pose.pose.position.x = position_x_;
-  odom_msg.pose.pose.position.y = position_y_;
+  odom_msg.pose.pose.position.x = final_position_x_;
+  odom_msg.pose.pose.position.y = final_position_y_;
   odom_msg.pose.pose.position.z = 0.0;
   odom_msg.pose.pose.orientation = odom_quat;
 
@@ -379,8 +389,8 @@ void RangerROSMessenger::UpdateOdometry(double linear, double angular,
     tf_msg.header.frame_id = odom_frame_;
     tf_msg.child_frame_id = base_frame_;
 
-    tf_msg.transform.translation.x = position_x_;
-    tf_msg.transform.translation.y = position_y_;
+    tf_msg.transform.translation.x = final_position_x_;
+    tf_msg.transform.translation.y = final_position_y_;
     tf_msg.transform.translation.z = 0.0;
     tf_msg.transform.rotation = odom_quat;
 
@@ -491,6 +501,12 @@ void RangerROSMessenger::TwistCmdCallback(geometry_msgs::msg::Twist::SharedPtr m
   }
 }
 
+void RangerROSMessenger::ResetOdomCallback(const std_srvs::srv::Empty::Request::SharedPtr,
+  const std_srvs::srv::Empty::Response::SharedPtr) {
+  offset_position_x_ = -position_x_;
+  offset_position_y_ = -position_y_;
+  offset_theta_ = -theta_;
+}
 
 geometry_msgs::msg::Quaternion RangerROSMessenger::createQuaternionMsgFromYaw(double yaw) {
     tf2::Quaternion q;

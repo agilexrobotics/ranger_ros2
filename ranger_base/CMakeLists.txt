@@ -18,6 +18,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -37,6 +38,7 @@ set(DEPENDENCIES
   "nav_msgs"
   "rclcpp"
   "std_msgs"
+  "std_srvs"
   "tf2"
   "tf2_ros"
   "ranger_msgs"
