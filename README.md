@@ -31,6 +31,8 @@ git clone -b jazzy https://github.com/S-abk/ranger_ros2.git
 cd ..
 colcon build
 ```
+### Usage
+
 3. Setup CAN-To-USB adapter
 
 * Enable gs_usb kernel module(If you have already added this module, you do not need to add it)
