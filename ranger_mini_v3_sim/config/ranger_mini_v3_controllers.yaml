@@ -1,0 +1,50 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    fl_steering_position_controller:
+      type: position_controllers/JointGroupPositionController
+    fr_steering_position_controller:
+      type: position_controllers/JointGroupPositionController
+    rl_steering_position_controller:
+      type: position_controllers/JointGroupPositionController
+    rr_steering_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+    fl_wheel_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+    fr_wheel_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+    rl_wheel_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+    rr_wheel_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+fl_steering_position_controller:
+  ros__parameters:
+    joints: [fl_steering_joint]
+fr_steering_position_controller:
+  ros__parameters:
+    joints: [fr_steering_joint]
+rl_steering_position_controller:
+  ros__parameters:
+    joints: [rl_steering_joint]
+rr_steering_position_controller:
+  ros__parameters:
+    joints: [rr_steering_joint]
+
+fl_wheel_velocity_controller:
+  ros__parameters:
+    joints: [fl_wheel]
+fr_wheel_velocity_controller:
+  ros__parameters:
+    joints: [fr_wheel]
+rl_wheel_velocity_controller:
+  ros__parameters:
+    joints: [rl_wheel]
+rr_wheel_velocity_controller:
+  ros__parameters:
+    joints: [rr_wheel]

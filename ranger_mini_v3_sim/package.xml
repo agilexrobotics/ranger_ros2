@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ranger_mini_v3_sim</name>
+  <version>0.1.0</version>
+  <description>
+    Gazebo Harmonic simulation support for the AgileX Ranger Mini v3.
+    Wraps ranger_mini_v3_description with ros2_control hardware
+    interfaces and the gz_ros2_control plugin. The kinematic Twist
+    messenger lives in a separate Phase 4 package.
+  </description>
+  <maintainer email="solanrewaju2020@fau.edu">Shuaib Olanrewaju</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>ranger_mini_v3_description</exec_depend>
+
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>position_controllers</exec_depend>
+  <exec_depend>velocity_controllers</exec_depend>
+  <exec_depend>gz_ros2_control</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

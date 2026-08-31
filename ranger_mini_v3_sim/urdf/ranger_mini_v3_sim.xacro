@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ranger_mini_v3_sim.xacro
+  Top-level xacro for Gazebo Harmonic simulation. Layers
+  ros2_control hardware interfaces and the gz_ros2_control
+  plugin onto the kinematics-only description package.
+-->
+<robot name="ranger_mini_v3" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="controller_yaml" default=""/>
+
+  <!-- The kinematic description, untouched. -->
+  <xacro:include filename="$(find ranger_mini_v3_description)/urdf/ranger_mini_v3.xacro"/>
+
+  <!--
+    Hardware interfaces.
+    Steering joints: position interface (commanded by Phase 4 node).
+    Wheel joints:    velocity interface (commanded by Phase 4 node).
+  -->
+  <ros2_control name="ranger_mini_v3_gz_system" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <xacro:macro name="steering_iface" params="prefix">
+      <joint name="${prefix}_steering_joint">
+        <command_interface name="position">
+          <param name="min">-2.1</param>
+          <param name="max"> 2.1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </xacro:macro>
+
+    <xacro:macro name="wheel_iface" params="prefix">
+      <joint name="${prefix}_wheel">
+        <command_interface name="velocity">
+          <param name="min">-30.0</param>
+          <param name="max"> 30.0</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </xacro:macro>
+
+    <xacro:steering_iface prefix="fl"/>
+    <xacro:steering_iface prefix="fr"/>
+    <xacro:steering_iface prefix="rl"/>
+    <xacro:steering_iface prefix="rr"/>
+
+    <xacro:wheel_iface prefix="fl"/>
+    <xacro:wheel_iface prefix="fr"/>
+    <xacro:wheel_iface prefix="rl"/>
+    <xacro:wheel_iface prefix="rr"/>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(arg controller_yaml)</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>

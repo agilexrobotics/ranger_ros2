@@ -1,0 +1,32 @@
+# ============================================================
+# Editor / IDE sidecars
+# ============================================================
+.vscode/
+.obsidian/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================================
+# OS junk
+# ============================================================
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# Python build / cache
+# ============================================================
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ============================================================
+# Colcon / ament build artifacts (defensive — these should
+# live at the workspace root, not in src/, but ignore anyway
+# in case anyone runs colcon from the wrong directory).
+# ============================================================
+build/
+install/
+log/
